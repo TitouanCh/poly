@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://p66obdmx2nfw"]
+
+[ext_resource type="PackedScene" uid="uid://dc50hsfuijety" path="res://models/glb/fort.glb" id="1_xt557"]
+[ext_resource type="Material" uid="uid://b5h273afu2egy" path="res://models/materials/brick.tres" id="2_h4uih"]
+
+[node name="fort" instance=ExtResource("1_xt557")]
+
+[node name="body" parent="." index="0"]
+surface_material_override/0 = ExtResource("2_h4uih")
+
+[node name="muraille" parent="." index="1"]
+surface_material_override/0 = ExtResource("2_h4uih")
+
+[node name="window_slope" parent="." index="2"]
+surface_material_override/0 = ExtResource("2_h4uih")
+
+[node name="muraille001" parent="." index="3"]
+surface_material_override/0 = ExtResource("2_h4uih")

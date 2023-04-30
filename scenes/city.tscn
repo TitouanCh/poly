@@ -1,0 +1,39 @@
+[gd_scene load_steps=7 format=3 uid="uid://c14v3njo2b80f"]
+
+[ext_resource type="PackedScene" uid="uid://p66obdmx2nfw" path="res://models/tscn/fort.tscn" id="1_folqa"]
+[ext_resource type="Shader" path="res://shaders/flag.gdshader" id="2_gddej"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_h7rx1"]
+top_radius = 0.05
+bottom_radius = 0.05
+height = 6.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_32not"]
+albedo_color = Color(0.458824, 0.239216, 0.145098, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0snv2"]
+render_priority = 0
+shader = ExtResource("2_gddej")
+
+[sub_resource type="QuadMesh" id="QuadMesh_5elrl"]
+material = SubResource("ShaderMaterial_0snv2")
+size = Vector2(2, 1)
+subdivide_width = 8
+
+[node name="city" type="Node3D"]
+
+[node name="fort" parent="." instance=ExtResource("1_folqa")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0)
+
+[node name="flag" type="Node3D" parent="."]
+
+[node name="flag_pole" type="MeshInstance3D" parent="flag"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.987276, 6.47701, 0)
+mesh = SubResource("CylinderMesh_h7rx1")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_32not")
+
+[node name="flag" type="MeshInstance3D" parent="flag"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.02465, 8.92495, 0)
+mesh = SubResource("QuadMesh_5elrl")
+skeleton = NodePath("../..")

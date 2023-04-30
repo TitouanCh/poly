@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3 uid="uid://kw2uyf01ppsa"]
+
+[ext_resource type="PackedScene" uid="uid://c1uf0plrh4w42" path="res://scenes/map_test.tscn" id="1_ogyj2"]
+[ext_resource type="Script" path="res://scripts/camera.gd" id="1_ud2of"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_p2yn5"]
+
+[sub_resource type="Sky" id="Sky_7a3w5"]
+sky_material = SubResource("ProceduralSkyMaterial_p2yn5")
+
+[sub_resource type="Environment" id="Environment_1rdca"]
+background_mode = 2
+sky = SubResource("Sky_7a3w5")
+ssao_enabled = true
+
+[node name="camera" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4000, 0, 4000)
+script = ExtResource("1_ud2of")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866026, 0, -0.866026, 0.5, 0, 78, 65)
+environment = SubResource("Environment_1rdca")
+current = true
+fov = 109.0
+
+[node name="map_test" parent="." instance=ExtResource("1_ogyj2")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.846175, 0.532906, 0, -0.532906, 0.846175, 0, 280.67, 205.802)
+light_energy = 1.5
+shadow_enabled = true
+shadow_bias = 0.01
+shadow_blur = 1.207
+directional_shadow_mode = 0
+directional_shadow_split_1 = 0.6
+directional_shadow_split_2 = 0.8
+directional_shadow_split_3 = 1.0
+directional_shadow_max_distance = 200.0

@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3 uid="uid://c1uf0plrh4w42"]
+
+[ext_resource type="Shader" path="res://shaders/map.gdshader" id="1_3qcfc"]
+[ext_resource type="Script" path="res://scripts/map.gd" id="1_l0lou"]
+[ext_resource type="Texture2D" uid="uid://c5oe3n3cyem6b" path="res://test_heightmap.png" id="2_k4q3l"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_knmut"]
+render_priority = 0
+shader = ExtResource("1_3qcfc")
+shader_parameter/position = Vector2(4000, 4000)
+shader_parameter/map_size = Vector2(8192, 8192)
+shader_parameter/map_scale = 10.0
+shader_parameter/mouse_position = Vector2(0.5, 0.75)
+shader_parameter/draw_mouse = false
+shader_parameter/color1 = Color(0.333333, 0.266667, 0.901961, 1)
+shader_parameter/color2 = Color(0.278431, 0.545098, 0.294118, 1)
+shader_parameter/heightmap = ExtResource("2_k4q3l")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_3st0k"]
+material = SubResource("ShaderMaterial_knmut")
+size = Vector2(600, 600)
+subdivide_width = 128
+subdivide_depth = 128
+
+[node name="map_test" type="Node3D"]
+script = ExtResource("1_l0lou")
+
+[node name="mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_3st0k")
