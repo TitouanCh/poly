@@ -1,9 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://kw2uyf01ppsa"]
+[gd_scene load_steps=6 format=3 uid="uid://ctd7gbfwfmydd"]
 
-[ext_resource type="PackedScene" uid="uid://c1uf0plrh4w42" path="res://scenes/map_test.tscn" id="1_ogyj2"]
+[ext_resource type="PackedScene" uid="uid://c1uf0plrh4w42" path="res://scenes/terrain.tscn" id="1_ogyj2"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="1_ud2of"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_p2yn5"]
+sky_top_color = Color(0.219608, 0.870588, 0.792157, 1)
+sky_horizon_color = Color(0.466667, 0.843137, 0.694118, 1)
+ground_bottom_color = Color(0.917647, 0.705882, 0.870588, 1)
 
 [sub_resource type="Sky" id="Sky_7a3w5"]
 sky_material = SubResource("ProceduralSkyMaterial_p2yn5")
@@ -11,6 +14,8 @@ sky_material = SubResource("ProceduralSkyMaterial_p2yn5")
 [sub_resource type="Environment" id="Environment_1rdca"]
 background_mode = 2
 sky = SubResource("Sky_7a3w5")
+tonemap_mode = 3
+tonemap_exposure = 0.7
 ssao_enabled = true
 
 [node name="camera" type="Node3D"]

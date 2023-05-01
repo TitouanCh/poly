@@ -46,3 +46,30 @@ right={
 
 lights_and_shadows/directional_shadow/size=8192
 lights_and_shadows/directional_shadow/size.mobile=4096
+
+[shader_globals]
+
+position={
+"type": "vec2",
+"value": Vector2(1000, 1000)
+}
+map_size={
+"type": "vec2",
+"value": Vector2(2048, 2048)
+}
+display_size={
+"type": "vec2",
+"value": Vector2(600, 600)
+}
+verticality={
+"type": "float",
+"value": 40.0
+}
+smoothness={
+"type": "float",
+"value": 8.0
+}
+heightmap={
+"type": "sampler2D",
+"value": "res://test_heightmap2_blurred.png"
+}

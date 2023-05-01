@@ -1,0 +1,19 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://diwmfolb8i6kv"]
+
+[ext_resource type="Shader" path="res://shaders/grass.gdshader" id="1_j5qa7"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_kil7r"]
+noise_type = 0
+seed = 32
+frequency = 0.5
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_b4pdm"]
+width = 2048
+height = 2048
+noise = SubResource("FastNoiseLite_kil7r")
+
+[resource]
+shader = ExtResource("1_j5qa7")
+shader_parameter/items_per_row = 100.0
+shader_parameter/noisemap_size = Vector2(2048, 2048)
+shader_parameter/noisemap = SubResource("NoiseTexture2D_b4pdm")

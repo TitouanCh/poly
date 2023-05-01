@@ -1,9 +1,11 @@
 shader_type spatial;
 
-uniform vec2 position = vec2(2000.0, 2000.0);
-uniform vec2 map_size = vec2(8192.0, 4096.0);
-uniform float map_scale = 20.0;
-uniform float verticality = 120.0;
+global uniform vec2 position;
+global uniform vec2 map_size;
+global uniform vec2 display_size;
+global uniform float verticality;
+global uniform float smoothness;
+global uniform sampler2D heightmap;
 
 uniform vec2 mouse_position = vec2(0.5, 0.5);
 uniform bool draw_mouse = false;
@@ -12,7 +14,6 @@ uniform vec3 upper_grass_color : source_color = vec3(0.0, 0.0, 0.0);
 uniform vec3 lower_grass_color : source_color = vec3(0.36, 0.52, 0.30);
 uniform vec3 cliff_color : source_color = vec3(0.4, 0.4, 0.10);
 
-uniform sampler2D heightmap;
 varying float height_val;
 varying float height_variance;
 
@@ -28,13 +29,13 @@ const vec2 vec_array[] = {
 };
 
 void vertex() {
-	height_val = texture(heightmap, UV / map_scale + (position/map_size)).r;
+	height_val = texture(heightmap, (UV * display_size + position)/map_size).r;
 	height_variance = 0.0;
 	
 	// AVERAGE NEIGHBORS
 	float sum = 0.0;
 	for (int i = 0; i < 8; i++) {
-		float nei_val = texture(heightmap, (UV + 40.0/2048.0 * vec_array[i]) / map_scale + (position/map_size)).r;
+		float nei_val = texture(heightmap, (UV * display_size + position + vec_array[i] * smoothness)/map_size).r;
 		height_variance += pow(height_val - nei_val, 2); 
 		sum += nei_val;
 	}

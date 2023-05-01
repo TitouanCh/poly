@@ -1,23 +1,20 @@
-[gd_scene load_steps=9 format=3 uid="uid://c1uf0plrh4w42"]
+[gd_scene load_steps=11 format=3 uid="uid://c1uf0plrh4w42"]
 
 [ext_resource type="Shader" path="res://shaders/map.gdshader" id="1_3qcfc"]
 [ext_resource type="Script" path="res://scripts/map.gd" id="1_l0lou"]
-[ext_resource type="Texture2D" uid="uid://iwfewsbvp3jo" path="res://test_heightmap2_blurred.png" id="3_d3l0k"]
 [ext_resource type="Shader" path="res://shaders/ocean.gdshader" id="4_b6af0"]
+[ext_resource type="Material" uid="uid://cuml8he2fssq3" path="res://models/materials/grass.tres" id="5_c4vbk"]
+[ext_resource type="Material" uid="uid://diwmfolb8i6kv" path="res://models/materials/grass_multiple.tres" id="6_51k8c"]
+[ext_resource type="ArrayMesh" uid="uid://c7ub57e1wt1o" path="res://models/obj/grass.obj" id="6_t2f75"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_knmut"]
 render_priority = 0
 shader = ExtResource("1_3qcfc")
-shader_parameter/position = Vector2(1000, 1000)
-shader_parameter/map_size = Vector2(2048, 2048)
-shader_parameter/map_scale = 4.0
-shader_parameter/verticality = 40.0
 shader_parameter/mouse_position = Vector2(0.5, 0.75)
 shader_parameter/draw_mouse = false
 shader_parameter/upper_grass_color = Color(0.407843, 0.686275, 0.337255, 1)
 shader_parameter/lower_grass_color = Color(0.266667, 0.521569, 0.223529, 1)
 shader_parameter/cliff_color = Color(0.647059, 0.803922, 0.560784, 1)
-shader_parameter/heightmap = ExtResource("3_d3l0k")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_3st0k"]
 material = SubResource("ShaderMaterial_knmut")
@@ -29,10 +26,6 @@ subdivide_depth = 64
 render_priority = 0
 shader = ExtResource("4_b6af0")
 shader_parameter/ocean_color = Color(0.145098, 0.466667, 0.501961, 1)
-shader_parameter/position = Vector2(2000, 2000)
-shader_parameter/map_size = Vector2(2048, 2048)
-shader_parameter/map_scale = 4.0
-shader_parameter/heightmap = ExtResource("3_d3l0k")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_eh8im"]
 material = SubResource("ShaderMaterial_4xn45")
@@ -40,13 +33,30 @@ size = Vector2(600, 600)
 subdivide_width = 48
 subdivide_depth = 48
 
-[node name="map_test" type="Node3D"]
+[node name="terrain" type="Node3D"]
 script = ExtResource("1_l0lou")
 
-[node name="mesh" type="MeshInstance3D" parent="."]
+[node name="continent" type="MeshInstance3D" parent="."]
 mesh = SubResource("PlaneMesh_3st0k")
 
 [node name="ocean" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_eh8im")
+
+[node name="grass" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 0, -300)
+visible = false
+material_override = ExtResource("5_c4vbk")
+amount = 10000
+explosiveness = 1.0
+local_coords = true
+process_material = ExtResource("6_51k8c")
+draw_pass_1 = ExtResource("6_t2f75")
+
+[node name="grass_test" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 33.0009, 0)
+visible = false
+material_override = ExtResource("5_c4vbk")
+mesh = ExtResource("6_t2f75")
+skeleton = NodePath("../ocean")
