@@ -2,14 +2,12 @@
 
 [ext_resource type="PackedScene" uid="uid://p66obdmx2nfw" path="res://models/tscn/fort.tscn" id="1_folqa"]
 [ext_resource type="Shader" path="res://shaders/flag.gdshader" id="2_gddej"]
+[ext_resource type="Material" uid="uid://d2642owa8knng" path="res://models/materials/wood.tres" id="2_omk7c"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_h7rx1"]
 top_radius = 0.05
 bottom_radius = 0.05
 height = 6.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_32not"]
-albedo_color = Color(0.458824, 0.239216, 0.145098, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0snv2"]
 render_priority = 0
@@ -31,7 +29,7 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.987276, 6.47701, 0)
 mesh = SubResource("CylinderMesh_h7rx1")
 skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_32not")
+surface_material_override/0 = ExtResource("2_omk7c")
 
 [node name="flag" type="MeshInstance3D" parent="flag"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.02465, 8.92495, 0)

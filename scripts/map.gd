@@ -4,6 +4,7 @@ var camera
 var dimension = 600
 
 @onready var mesh = $mesh
+@onready var ocean = $ocean
 
 func _ready():
 	if get_parent():
@@ -12,5 +13,7 @@ func _ready():
 func _process(delta):
 	if camera:
 		mesh.mesh.material.set_shader_parameter("position", Vector2(camera.position.x, camera.position.z))
+		ocean.mesh.material.set_shader_parameter("position", Vector2(camera.position.x, camera.position.z))
+#		
 #		mesh.mesh.material.set_shader_parameter("mouse_position", Vector2(camera.mouse_projection.x/2 + 0.5, camera.mouse_projection.z/2 + 0.5))
 	

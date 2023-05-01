@@ -14,7 +14,7 @@ sky = SubResource("Sky_7a3w5")
 ssao_enabled = true
 
 [node name="camera" type="Node3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4000, 0, 4000)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1000, 0, 1000)
 script = ExtResource("1_ud2of")
 
 [node name="Camera3D" type="Camera3D" parent="."]
@@ -26,11 +26,10 @@ fov = 109.0
 [node name="map_test" parent="." instance=ExtResource("1_ogyj2")]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.846175, 0.532906, 0, -0.532906, 0.846175, 0, 280.67, 205.802)
-light_energy = 1.5
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 100, 10)
 shadow_enabled = true
-shadow_bias = 0.01
-shadow_blur = 1.207
+shadow_normal_bias = 0.378
+shadow_blur = 1.2
 directional_shadow_mode = 0
 directional_shadow_split_1 = 0.6
 directional_shadow_split_2 = 0.8
