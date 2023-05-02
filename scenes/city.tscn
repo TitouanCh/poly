@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://c14v3njo2b80f"]
+[gd_scene load_steps=14 format=3 uid="uid://c14v3njo2b80f"]
 
 [ext_resource type="PackedScene" uid="uid://p66obdmx2nfw" path="res://models/tscn/fort.tscn" id="1_folqa"]
 [ext_resource type="Script" path="res://scripts/city.gd" id="1_o7w7p"]
 [ext_resource type="Shader" path="res://shaders/flag.gdshader" id="2_gddej"]
 [ext_resource type="Material" uid="uid://d2642owa8knng" path="res://models/materials/wood.tres" id="2_omk7c"]
+[ext_resource type="Shader" path="res://shaders/houses.gdshader" id="5_jayt4"]
+[ext_resource type="ArrayMesh" uid="uid://b308g4t4lksru" path="res://models/obj/house.obj" id="6_hm050"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_h7rx1"]
 top_radius = 0.05
@@ -18,6 +20,22 @@ shader = ExtResource("2_gddej")
 material = SubResource("ShaderMaterial_0snv2")
 size = Vector2(2, 1)
 subdivide_width = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t85fe"]
+albedo_color = Color(0.643137, 0.780392, 0.862745, 1)
+roughness = 0.66
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_sx3xq"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_pu3v1"]
+noise = SubResource("FastNoiseLite_sx3xq")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xve55"]
+shader = ExtResource("5_jayt4")
+shader_parameter/max_distance_to_city = 6.0
+shader_parameter/min_distance_to_city = 1.0
+shader_parameter/noisemap_size = Vector2(512, 512)
+shader_parameter/noisemap = SubResource("NoiseTexture2D_pu3v1")
 
 [node name="city" type="Node3D"]
 script = ExtResource("1_o7w7p")
@@ -37,6 +55,13 @@ surface_material_override/0 = ExtResource("2_omk7c")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.02465, 8.92495, 0)
 mesh = SubResource("QuadMesh_5elrl")
 skeleton = NodePath("../..")
+
+[node name="houses" type="GPUParticles3D" parent="."]
+material_override = SubResource("StandardMaterial3D_t85fe")
+emitting = false
+local_coords = true
+process_material = SubResource("ShaderMaterial_xve55")
+draw_pass_1 = ExtResource("6_hm050")
 
 [node name="ui_elements" type="CanvasLayer" parent="."]
 

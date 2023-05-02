@@ -1,6 +1,6 @@
 extends Node3D
 
-@onready var camera = $camera
+@onready var camera = $player.get_node("camera")
 
 func _ready():
 	pass
