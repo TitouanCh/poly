@@ -18,19 +18,19 @@ tonemap_mode = 3
 tonemap_exposure = 0.7
 ssao_enabled = true
 
-[node name="camera" type="Node3D"]
+[node name="player" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1000, 0, 1000)
 script = ExtResource("1_ud2of")
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.5, 0.866026, 0, -0.866026, 0.5, 0, 78, 65)
 environment = SubResource("Environment_1rdca")
 current = true
 fov = 109.0
 
-[node name="map_test" parent="." instance=ExtResource("1_ogyj2")]
+[node name="terrain" parent="." instance=ExtResource("1_ogyj2")]
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="light" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 100, 10)
 shadow_enabled = true
 shadow_normal_bias = 0.378

@@ -2,8 +2,8 @@ extends Node3D
 
 var speed = 200
 var mouse_projection = Vector3(0, 0, 0)
-@onready var terrain = $map_test
-@onready var camera = $Camera3D
+@onready var terrain = $terrain
+@onready var camera = $camera
 
 func _ready():
 	#Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)

@@ -38,9 +38,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.02465, 8.92495, 0)
 mesh = SubResource("QuadMesh_5elrl")
 skeleton = NodePath("../..")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="ui_elements" type="CanvasLayer" parent="."]
 
-[node name="Label" type="Label" parent="CanvasLayer"]
-offset_right = 40.0
+[node name="city_name" type="Label" parent="ui_elements"]
+offset_right = 120.0
 offset_bottom = 26.0
-text = "Paris"
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 32
+text = "Orsay"
+horizontal_alignment = 1
