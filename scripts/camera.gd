@@ -25,6 +25,11 @@ func _process(delta):
 	position.z += speed * inputs.y * delta
 	
 	update_mouse_projection()
+	
+	if Input.is_action_pressed("zoom_in"):
+		camera.fov += delta * 15.0
+	if Input.is_action_pressed("zoom_out"):
+		camera.fov -= delta * 15.0
 
 func update_mouse_projection():
 	var vec = camera.project_ray_normal(get_viewport().get_mouse_position())

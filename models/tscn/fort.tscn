@@ -1,11 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://p66obdmx2nfw"]
+[gd_scene load_steps=7 format=3 uid="uid://p66obdmx2nfw"]
 
 [ext_resource type="PackedScene" uid="uid://dc50hsfuijety" path="res://models/glb/fort.glb" id="1_xt557"]
 [ext_resource type="Material" uid="uid://b5h273afu2egy" path="res://models/materials/brick.tres" id="2_h4uih"]
 [ext_resource type="Texture2D" uid="uid://bmhd78n02k11e" path="res://models/textures/fort.png" id="2_pe0ox"]
+[ext_resource type="Material" uid="uid://b8m6gksxclyq0" path="res://addons/3D Outline/Outline.material" id="3_3g0vn"]
 [ext_resource type="Material" uid="uid://d2642owa8knng" path="res://models/materials/wood.tres" id="4_ct1bq"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4mm1u"]
+next_pass = ExtResource("3_3g0vn")
 albedo_color = Color(0.815686, 0.764706, 0.666667, 1)
 albedo_texture = ExtResource("2_pe0ox")
 uv1_world_triplanar = true

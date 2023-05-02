@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://cky5eghgg6o2s"]
+
+[ext_resource type="ArrayMesh" uid="uid://olp6u8fktd3c" path="res://models/obj/sword_guy.obj" id="1_53vge"]
+[ext_resource type="Script" path="res://scripts/unit.gd" id="1_r88q7"]
+[ext_resource type="Material" uid="uid://b8m6gksxclyq0" path="res://addons/3D Outline/Outline.material" id="2_etv37"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nv6d7"]
+next_pass = ExtResource("2_etv37")
+albedo_color = Color(1, 0.509804, 0.576471, 1)
+
+[node name="unit" type="Node3D"]
+script = ExtResource("1_r88q7")
+
+[node name="mesh" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_nv6d7")
+mesh = ExtResource("1_53vge")
+
+[node name="ui_elements" type="CanvasLayer" parent="."]
+
+[node name="unit_name" type="Label" parent="ui_elements"]
+offset_right = 200.0
+offset_bottom = 37.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 24
+text = "Swordmen"
+horizontal_alignment = 1

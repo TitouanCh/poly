@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://olp6u8fktd3c"
+path="res://.godot/imported/sword_guy.obj-4deca47b040504512ea7e393b9a5f327.mesh"
+
+[deps]
+
+files=["res://.godot/imported/sword_guy.obj-4deca47b040504512ea7e393b9a5f327.mesh"]
+
+source_file="res://models/obj/sword_guy.obj"
+dest_files=["res://.godot/imported/sword_guy.obj-4deca47b040504512ea7e393b9a5f327.mesh", "res://.godot/imported/sword_guy.obj-4deca47b040504512ea7e393b9a5f327.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
