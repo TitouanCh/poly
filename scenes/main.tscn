@@ -1,11 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://d2jfs04qadtre"]
+[gd_scene load_steps=4 format=3 uid="uid://d2jfs04qadtre"]
 
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_1khab"]
 [ext_resource type="PackedScene" uid="uid://ctd7gbfwfmydd" path="res://scenes/camera.tscn" id="1_ajvuq"]
 [ext_resource type="PackedScene" uid="uid://c14v3njo2b80f" path="res://scenes/city.tscn" id="2_jurvo"]
 
 [node name="main" type="Node3D"]
+script = ExtResource("1_1khab")
 
 [node name="camera" parent="." instance=ExtResource("1_ajvuq")]
 
 [node name="city" parent="." instance=ExtResource("2_jurvo")]
-transform = Transform3D(0.819152, 0, 0.573576, 0, 1, 0, -0.573576, 0, 0.819152, 1000, 24.5, 1000)
+transform = Transform3D(0.819152, 0, 0.573576, 0, 1, 0, -0.573576, 0, 0.819152, 1000, 20.0554, 1000)

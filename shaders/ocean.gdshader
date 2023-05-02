@@ -21,10 +21,12 @@ const vec2 vec_array[] = {
 };
 
 void vertex() {
+	// TIDES
 	VERTEX.y = cos(TIME)/2.0;
 }
 
 void fragment() {
+	// HEIGHT CALC
 	float height_val = texture(heightmap, (UV * display_size + position)/map_size).r;
 	
 	// AVERAGE NEIGHBORS
@@ -37,6 +39,7 @@ void fragment() {
 	height_val = (height_val + sum)/9.0;
 	float foam = height_val;
 	
+	// WATER PAINTER
 	if (foam > 0.11 + (cos(TIME)/20.0 * 0.1)) {
 		ALBEDO = mix(ocean_color, vec3(1.0, 1.0, 1.0), foam * abs(cos(TIME)/2.0) + 0.5);
 		ALPHA = 0.9;

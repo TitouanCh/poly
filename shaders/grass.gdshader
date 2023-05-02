@@ -1,5 +1,7 @@
 shader_type particles;
 
+// UGLY
+
 global uniform vec2 position;
 global uniform vec2 map_size;
 global uniform float verticality;

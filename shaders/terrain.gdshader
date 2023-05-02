@@ -29,13 +29,18 @@ const vec2 vec_array[] = {
 };
 
 void vertex() {
-	height_val = texture(heightmap, (UV * display_size + position)/map_size).r;
+	// GRID SETUP
+	vec2 offset = vec2(mod(position.x, 600.0/64.0), mod(position.y, 600.0/64.0));
+	vec2 new_position = position + offset;
+	
+	// HEIGHT CALC
+	height_val = texture(heightmap, (UV * display_size + new_position)/map_size).r;
 	height_variance = 0.0;
 	
 	// AVERAGE NEIGHBORS
 	float sum = 0.0;
 	for (int i = 0; i < 8; i++) {
-		float nei_val = texture(heightmap, (UV * display_size + position + vec_array[i] * smoothness)/map_size).r;
+		float nei_val = texture(heightmap, (UV * display_size + new_position + vec_array[i] * smoothness)/map_size).r;
 		height_variance += pow(height_val - nei_val, 2); 
 		sum += nei_val;
 	}
@@ -44,9 +49,11 @@ void vertex() {
 	height_variance = height_variance/8.0;
 	
 	VERTEX.y += height_val * verticality;
+	VERTEX.xz += offset;
 }
 
 void fragment() {
+	// TERRAIN PAINT
 	if (distance(mouse_position, UV) < 0.01 && draw_mouse) {
 		ALBEDO = vec3(1.0, 0.0, 0.0);
 	} else {

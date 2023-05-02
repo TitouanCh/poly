@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://c14v3njo2b80f"]
+[gd_scene load_steps=8 format=3 uid="uid://c14v3njo2b80f"]
 
 [ext_resource type="PackedScene" uid="uid://p66obdmx2nfw" path="res://models/tscn/fort.tscn" id="1_folqa"]
+[ext_resource type="Script" path="res://scripts/city.gd" id="1_o7w7p"]
 [ext_resource type="Shader" path="res://shaders/flag.gdshader" id="2_gddej"]
 [ext_resource type="Material" uid="uid://d2642owa8knng" path="res://models/materials/wood.tres" id="2_omk7c"]
 
@@ -19,6 +20,7 @@ size = Vector2(2, 1)
 subdivide_width = 8
 
 [node name="city" type="Node3D"]
+script = ExtResource("1_o7w7p")
 
 [node name="fort" parent="." instance=ExtResource("1_folqa")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0)
@@ -35,3 +37,10 @@ surface_material_override/0 = ExtResource("2_omk7c")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.02465, 8.92495, 0)
 mesh = SubResource("QuadMesh_5elrl")
 skeleton = NodePath("../..")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 26.0
+text = "Paris"

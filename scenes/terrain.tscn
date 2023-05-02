@@ -1,7 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://c1uf0plrh4w42"]
+[gd_scene load_steps=11 format=3 uid="uid://2tb7e5qmc0sq"]
 
-[ext_resource type="Shader" path="res://shaders/map.gdshader" id="1_3qcfc"]
 [ext_resource type="Script" path="res://scripts/map.gd" id="1_l0lou"]
+[ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="2_n7ygw"]
 [ext_resource type="Shader" path="res://shaders/ocean.gdshader" id="4_b6af0"]
 [ext_resource type="Material" uid="uid://cuml8he2fssq3" path="res://models/materials/grass.tres" id="5_c4vbk"]
 [ext_resource type="Material" uid="uid://diwmfolb8i6kv" path="res://models/materials/grass_multiple.tres" id="6_51k8c"]
@@ -9,7 +9,7 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_knmut"]
 render_priority = 0
-shader = ExtResource("1_3qcfc")
+shader = ExtResource("2_n7ygw")
 shader_parameter/mouse_position = Vector2(0.5, 0.75)
 shader_parameter/draw_mouse = false
 shader_parameter/upper_grass_color = Color(0.407843, 0.686275, 0.337255, 1)
@@ -53,10 +53,3 @@ explosiveness = 1.0
 local_coords = true
 process_material = ExtResource("6_51k8c")
 draw_pass_1 = ExtResource("6_t2f75")
-
-[node name="grass_test" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 33.0009, 0)
-visible = false
-material_override = ExtResource("5_c4vbk")
-mesh = ExtResource("6_t2f75")
-skeleton = NodePath("../ocean")

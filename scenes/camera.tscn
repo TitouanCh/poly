@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://ctd7gbfwfmydd"]
 
-[ext_resource type="PackedScene" uid="uid://c1uf0plrh4w42" path="res://scenes/terrain.tscn" id="1_ogyj2"]
+[ext_resource type="PackedScene" uid="uid://2tb7e5qmc0sq" path="res://scenes/terrain.tscn" id="1_ogyj2"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="1_ud2of"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_p2yn5"]
