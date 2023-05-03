@@ -1,9 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://c5nef7momimg2"]
+[gd_scene load_steps=4 format=3 uid="uid://c5nef7momimg2"]
 
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_l1d3v"]
 [ext_resource type="Script" path="res://scripts/ether.gd" id="1_pp35f"]
 [ext_resource type="PackedScene" uid="uid://bdmtbycgr6h82" path="res://scenes/renderer.tscn" id="1_xq7et"]
 
 [node name="main" type="Node"]
+script = ExtResource("1_l1d3v")
 
 [node name="flask" type="SubViewportContainer" parent="."]
 offset_right = 40.0

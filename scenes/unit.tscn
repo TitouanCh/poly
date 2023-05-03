@@ -1,11 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://cky5eghgg6o2s"]
+[gd_scene load_steps=5 format=3 uid="uid://cxc3m730iykat"]
 
 [ext_resource type="ArrayMesh" uid="uid://olp6u8fktd3c" path="res://models/obj/sword_guy.obj" id="1_53vge"]
 [ext_resource type="Script" path="res://scripts/unit.gd" id="1_r88q7"]
-[ext_resource type="Material" uid="uid://b8m6gksxclyq0" path="res://addons/3D Outline/Outline.material" id="2_etv37"]
+[ext_resource type="Material" uid="uid://b8m6gksxclyq0" path="res://models/materials/outline.material" id="2_tes46"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nv6d7"]
-next_pass = ExtResource("2_etv37")
+next_pass = ExtResource("2_tes46")
 albedo_color = Color(1, 0.509804, 0.576471, 1)
 
 [node name="unit" type="Node3D"]

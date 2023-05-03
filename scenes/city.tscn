@@ -1,10 +1,10 @@
-[gd_scene load_steps=15 format=3 uid="uid://c14v3njo2b80f"]
+[gd_scene load_steps=15 format=3 uid="uid://b46ra4cun18oh"]
 
-[ext_resource type="PackedScene" uid="uid://p66obdmx2nfw" path="res://models/tscn/fort.tscn" id="1_folqa"]
+[ext_resource type="PackedScene" uid="uid://cen0avn7ruvba" path="res://models/tscn/fort.tscn" id="1_folqa"]
 [ext_resource type="Script" path="res://scripts/city.gd" id="1_o7w7p"]
 [ext_resource type="Shader" path="res://shaders/flag.gdshader" id="2_gddej"]
 [ext_resource type="Material" uid="uid://d2642owa8knng" path="res://models/materials/wood.tres" id="2_omk7c"]
-[ext_resource type="Material" uid="uid://b8m6gksxclyq0" path="res://addons/3D Outline/Outline.material" id="5_8ocpk"]
+[ext_resource type="Material" uid="uid://b8m6gksxclyq0" path="res://models/materials/outline.material" id="5_6mwdb"]
 [ext_resource type="Shader" path="res://shaders/houses.gdshader" id="5_jayt4"]
 [ext_resource type="ArrayMesh" uid="uid://b308g4t4lksru" path="res://models/obj/house.obj" id="6_hm050"]
 
@@ -23,7 +23,7 @@ size = Vector2(2, 1)
 subdivide_width = 8
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t85fe"]
-next_pass = ExtResource("5_8ocpk")
+next_pass = ExtResource("5_6mwdb")
 albedo_color = Color(0.643137, 0.780392, 0.862745, 1)
 roughness = 0.66
 
@@ -61,6 +61,7 @@ skeleton = NodePath("../..")
 
 [node name="houses" type="GPUParticles3D" parent="."]
 material_override = SubResource("StandardMaterial3D_t85fe")
+instance_shader_parameters/outline_thickness = 0.3
 local_coords = true
 process_material = SubResource("ShaderMaterial_xve55")
 draw_pass_1 = ExtResource("6_hm050")
