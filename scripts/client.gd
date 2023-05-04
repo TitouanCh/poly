@@ -1,5 +1,7 @@
 extends Node
 
+class_name Client
+
 signal connected
 signal data
 signal disconnected
@@ -49,7 +51,7 @@ func connect_to_host(host: String, port: int) -> void:
 		print("Error connecting to host.")
 		emit_signal("error")
 
-func send(data) -> bool:
+func send(data : PackedByteArray) -> bool:
 	if _status != _stream.STATUS_CONNECTED:
 		print("Error: Stream is not currently connected.")
 		return false
@@ -58,4 +60,6 @@ func send(data) -> bool:
 	if error != OK:
 		print("Error writing to stream: ", error)
 		return false
+	
+	print("Sent data: " + str(data))
 	return true

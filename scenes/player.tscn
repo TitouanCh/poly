@@ -1,0 +1,63 @@
+[gd_scene load_steps=7 format=3 uid="uid://ctd7gbfwfmydd"]
+
+[ext_resource type="Script" path="res://scripts/camera.gd" id="1_y54sd"]
+[ext_resource type="PackedScene" uid="uid://2tb7e5qmc0sq" path="res://scenes/terrain.tscn" id="2_qi25t"]
+[ext_resource type="Script" path="res://scripts/chat.gd" id="3_nadea"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_p2yn5"]
+sky_top_color = Color(0.219608, 0.870588, 0.792157, 1)
+sky_horizon_color = Color(0.466667, 0.843137, 0.694118, 1)
+ground_bottom_color = Color(0.917647, 0.705882, 0.870588, 1)
+
+[sub_resource type="Sky" id="Sky_7a3w5"]
+sky_material = SubResource("ProceduralSkyMaterial_p2yn5")
+
+[sub_resource type="Environment" id="Environment_1rdca"]
+background_mode = 2
+sky = SubResource("Sky_7a3w5")
+tonemap_mode = 3
+tonemap_exposure = 0.7
+ssao_enabled = true
+
+[node name="player" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1000, 0, 1000)
+script = ExtResource("1_y54sd")
+
+[node name="camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866026, 0, -0.866026, 0.5, 0, 78, 65)
+environment = SubResource("Environment_1rdca")
+current = true
+fov = 109.0
+
+[node name="terrain" parent="." instance=ExtResource("2_qi25t")]
+
+[node name="light" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 100, 10)
+shadow_enabled = true
+shadow_normal_bias = 0.378
+shadow_blur = 1.2
+directional_shadow_mode = 0
+directional_shadow_split_1 = 0.6
+directional_shadow_split_2 = 0.8
+directional_shadow_split_3 = 1.0
+directional_shadow_max_distance = 200.0
+
+[node name="ui_elements" type="CanvasLayer" parent="."]
+
+[node name="chat" type="RichTextLabel" parent="ui_elements"]
+offset_left = 200.0
+offset_top = 200.0
+offset_right = 900.0
+offset_bottom = 900.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 8
+text = "Baba: Hello"
+script = ExtResource("3_nadea")
+
+[node name="chat_edit" type="TextEdit" parent="ui_elements/chat"]
+layout_mode = 0
+offset_top = 300.0
+offset_right = 200.0
+offset_bottom = 340.0
+mouse_filter = 2

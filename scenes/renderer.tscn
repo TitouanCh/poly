@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://bdmtbycgr6h82"]
+[gd_scene load_steps=5 format=3 uid="uid://c4q5b0cx8h0se"]
 
-[ext_resource type="PackedScene" uid="uid://ctd7gbfwfmydd" path="res://scenes/camera.tscn" id="1_ajvuq"]
+[ext_resource type="PackedScene" uid="uid://ctd7gbfwfmydd" path="res://scenes/player.tscn" id="1_ajvuq"]
 [ext_resource type="Script" path="res://scripts/renderer.gd" id="1_amsbv"]
 [ext_resource type="PackedScene" uid="uid://b46ra4cun18oh" path="res://scenes/city.tscn" id="2_jurvo"]
 [ext_resource type="PackedScene" uid="uid://cxc3m730iykat" path="res://scenes/unit.tscn" id="4_ovgiw"]
