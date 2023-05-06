@@ -10,11 +10,13 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_knmut"]
 render_priority = 0
 shader = ExtResource("2_n7ygw")
-shader_parameter/mouse_position = Vector2(0.5, 0.75)
-shader_parameter/draw_mouse = false
+shader_parameter/mouse_position = Vector2(0.5, 0.5)
+shader_parameter/draw_mouse = true
+shader_parameter/mouse_outline = 0.001
 shader_parameter/upper_grass_color = Color(0.407843, 0.686275, 0.337255, 1)
 shader_parameter/lower_grass_color = Color(0.266667, 0.521569, 0.223529, 1)
 shader_parameter/cliff_color = Color(0.647059, 0.803922, 0.560784, 1)
+shader_parameter/selected_points = PackedVector3Array()
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_3st0k"]
 material = SubResource("ShaderMaterial_knmut")

@@ -1,5 +1,7 @@
 extends Node3D
 
+class_name Player
+
 var speed = 200
 var mouse_projection = Vector3(0, 0, 0)
 @onready var terrain = $terrain
