@@ -15,6 +15,7 @@ func _ready():
 func _process(delta):
 	if player:
 		RenderingServer.global_shader_parameter_set("position", Vector2(player.position.x, player.position.z))
+		
 		continent.mesh.material.set_shader_parameter("mouse_position", Vector2(player.mouse_projection.x/2 + 0.5, player.mouse_projection.z/2 + 0.5))
 	
 	var arr : PackedVector3Array

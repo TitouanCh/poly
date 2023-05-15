@@ -9,6 +9,7 @@
 script = ExtResource("1_amsbv")
 
 [node name="player" parent="." instance=ExtResource("1_ajvuq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="city" parent="." instance=ExtResource("2_jurvo")]
 transform = Transform3D(0.819152, 0, 0.573576, 0, 1, 0, -0.573576, 0, 0.819152, 1000, 20.0554, 1000)
