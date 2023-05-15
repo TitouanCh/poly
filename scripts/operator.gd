@@ -10,8 +10,7 @@ var selected_node : Prop = null
 func _process(delta):
 	if Input.is_action_just_pressed("right_click"):
 		if selected_node is Unit:
-			selected_node.target = Vector3(renderer.player.mouse_projection.x, 0, renderer.player.mouse_projection.y)
-			print("test")
+			selected_node.target = renderer.get_unprojected_mouse_position()
 
 func prop_clicked(prop : Prop):
 	# Unselect previous selection
@@ -20,4 +19,3 @@ func prop_clicked(prop : Prop):
 	# Select newly clicked prop
 	prop.select()
 	selected_node = prop
-	

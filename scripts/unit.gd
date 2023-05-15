@@ -24,9 +24,3 @@ func _update(delta):
 
 func _to_string() -> String:
 	return "Unit | {2} | position: {0} | selected: {1}".format([position, is_selected, unit_name])
-
-#func get_unprojected_mouse_position():
-#	var vec = camera.project_ray_normal(get_viewport().get_mouse_position())
-#	var alpha = -camera.position.y/vec.y
-#	var point = Vector3(vec.x * alpha, -camera.position.y, vec.z * alpha) + camera.position + player.position
-#	return point

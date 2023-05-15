@@ -26,7 +26,6 @@ func _process(delta):
 	
 	# MOUSE IN TERRAIN POSITION
 	update_mouse_projection()
-	print(mouse_projection)
 	
 	# ZOOM
 	if Input.is_action_pressed("zoom_in"):
