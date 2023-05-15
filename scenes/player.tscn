@@ -1,6 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://ctd7gbfwfmydd"]
+[gd_scene load_steps=7 format=3 uid="uid://dyi6al3ls7sjw"]
 
-[ext_resource type="Script" path="res://scripts/camera.gd" id="1_y54sd"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_q1lck"]
 [ext_resource type="PackedScene" uid="uid://2tb7e5qmc0sq" path="res://scenes/terrain.tscn" id="2_qi25t"]
 [ext_resource type="Script" path="res://scripts/chat.gd" id="3_nadea"]
 
@@ -21,7 +21,7 @@ ssao_enabled = true
 
 [node name="player" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1000, 0, 1000)
-script = ExtResource("1_y54sd")
+script = ExtResource("1_q1lck")
 
 [node name="camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.5, 0.866026, 0, -0.866026, 0.5, 0, 78, 65)
