@@ -8,6 +8,7 @@ const Client = preload("res://scripts/client.gd")
 var _client = Client.new()
 
 signal received_chat_message(content : String)
+signal received_start_game
 
 func _ready() -> void:
 	_client.connected.connect(_handle_client_connected)
@@ -30,6 +31,8 @@ func _handle_client_data(data) -> void:
 	# Chat message
 	if data[0] == 109:
 		received_chat_message.emit(data.slice(1).get_string_from_utf8())
+	
+	
 
 
 func _handle_client_disconnected() -> void:
@@ -42,3 +45,6 @@ func _handle_client_error() -> void:
 
 func _send_chat_message(message : String) -> void:
 	_client.send(("msg" + message).to_utf8_buffer())
+
+func _send_start_game() -> void:
+	_client.send("sta".to_utf8_buffer())
