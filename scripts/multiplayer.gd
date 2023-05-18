@@ -26,14 +26,15 @@ func _handle_client_connected() -> void:
 	print("Client connected to server.")
 
 func _handle_client_data(data) -> void:
-	print("Received data: ", data.get_string_from_utf8())
+	print("Received data: ", data.get_string_from_utf8(), " or ", data)
 	
 	# Chat message
 	if data[0] == 109:
 		received_chat_message.emit(data.slice(1).get_string_from_utf8())
 	
-	
-
+	# Start game message
+	if data[0] == 115:
+		received_start_game.emit()
 
 func _handle_client_disconnected() -> void:
 	print("Client disconnected from server.")
@@ -48,3 +49,11 @@ func _send_chat_message(message : String) -> void:
 
 func _send_start_game() -> void:
 	_client.send("sta".to_utf8_buffer())
+
+func _send_placed_city(coord : Vector2i):
+	var message = PackedByteArray("plc".to_utf8_buffer())
+	message += PackedByteArray([0, 0, 0, 0, 0, 0, 0, 0])
+	message.encode_u32(3, coord.x)
+	message.encode_u32(7, coord.y)
+
+	_client.send(message)
