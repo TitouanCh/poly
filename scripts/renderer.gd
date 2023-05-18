@@ -5,8 +5,8 @@ class_name Renderer
 @export var player : Player
 @export var city_scene : PackedScene
 
-@export var cities_pool_number = 4
-var cities = []
+@export var cities_pool_number = 12
+var cities : Array[City] = []
 
 func _ready():
 	setup_city_pool(cities_pool_number)
@@ -30,5 +30,12 @@ func spawn_city():
 	cities.append(city)
 	city.set_unactive()
 
-func set_city(city_data):
-	pass
+func set_city(city_data : PackedStringArray):
+	# Decode
+	var id = int(city_data[0])
+	var coord = Vector2(float(city_data[1]), float(city_data[2]))
+	
+	# Setup
+	if (id < cities_pool_number):
+		cities[id].set_active()
+		cities[id].set_coord(coord)

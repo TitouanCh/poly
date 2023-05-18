@@ -17,14 +17,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Only one game at a time for now
 
     // Game state values: single global values for the game
-    let mut game_state_values: HashMap<String, i32> = HashMap::new();
+    let mut game_state_values: HashMap<String, u32> = HashMap::new();
     game_state_values.insert("phase".to_string(), 0);
-    let game_state_values: Arc<RwLock<HashMap<String, i32>>> = Arc::new(RwLock::new(game_state_values));
+    game_state_values.insert("number_of_cities".to_string(), 0);
+    let game_state_values: Arc<RwLock<HashMap<String, u32>>> = Arc::new(RwLock::new(game_state_values));
 
     // Game state hashmap: for entities (cities, units, etc...)
-    let mut game_state_cities: HashMap<String, Vec<u32>> = HashMap::new();
-    game_state_cities.insert("Test".to_string(), vec![800, 800]);
-    let game_state_cities: Arc<RwLock<HashMap<String, Vec<u32>>>> =  Arc::new(RwLock::new(game_state_cities));
+    let game_state_cities: HashMap<u32, Vec<u32>> = HashMap::new();
+    let game_state_cities: Arc<RwLock<HashMap<u32, Vec<u32>>>> =  Arc::new(RwLock::new(game_state_cities));
 
 
     // Start listening to port 3000
@@ -55,8 +55,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 }
 
 async fn handle_client(mut socket: TcpStream, tx: &Sender<String>, mut rx: Receiver<String>,
-    game_state_values: &Arc<RwLock<HashMap<String, i32>>>,
-    game_state_cities: &Arc<RwLock<HashMap<String, Vec<u32>>>>
+    game_state_values: &Arc<RwLock<HashMap<String, u32>>>,
+    game_state_cities: &Arc<RwLock<HashMap<u32, Vec<u32>>>>
 ) -> Result<(), Box<dyn Error>> {
     
     let remote_ip = socket.peer_addr()?.ip();
@@ -103,7 +103,8 @@ async fn handle_client(mut socket: TcpStream, tx: &Sender<String>, mut rx: Recei
 }
 
 fn handle_message(message: Vec<u8>, tx: &Sender<String>,
-    game_state_values: &Arc<RwLock<HashMap<String, i32>>>, game_state_cities: &Arc<RwLock<HashMap<String, Vec<u32>>>>) -> Result<(), Box<dyn Error>> {
+    game_state_values: &Arc<RwLock<HashMap<String, u32>>>, 
+    game_state_cities: &Arc<RwLock<HashMap<u32, Vec<u32>>>>) -> Result<(), Box<dyn Error>> {
 
     // Chat message
     if message[0..3] == [109, 115, 103] {
@@ -132,8 +133,13 @@ fn handle_message(message: Vec<u8>, tx: &Sender<String>,
 
         // Modify game state
         {
+            let mut inner_game_state_values = game_state_values.write().unwrap();
+            let number_of_cities = inner_game_state_values.entry("number_of_cities".to_string()).or_insert(0);
+
             let mut inner_game_state_cities = game_state_cities.write().unwrap();
-            inner_game_state_cities.insert("Orsay".to_string(), vec![as_u32(message[3..7].to_vec()), as_u32(message[7..11].to_vec())]);
+            inner_game_state_cities.insert(number_of_cities.clone(), vec![as_u32(message[3..7].to_vec()), as_u32(message[7..11].to_vec())]);
+
+            *number_of_cities += 1;
         }
 
         // Send back game state
@@ -143,7 +149,7 @@ fn handle_message(message: Vec<u8>, tx: &Sender<String>,
     Ok(())
 }
 
-fn send_back_game_state(tx: &Sender<String>, game_state_cities: &Arc<RwLock<HashMap<String, Vec<u32>>>>) -> Result<(), Box<dyn Error>> {
+fn send_back_game_state(tx: &Sender<String>, game_state_cities: &Arc<RwLock<HashMap<u32, Vec<u32>>>>) -> Result<(), Box<dyn Error>> {
     let inner_game_state_cities = game_state_cities.read().unwrap().clone();
 
     for (city_id, city_data) in inner_game_state_cities {
@@ -153,8 +159,8 @@ fn send_back_game_state(tx: &Sender<String>, game_state_cities: &Arc<RwLock<Hash
     Ok(())
 }
 
-fn city_to_string(city_id : String, city_data : Vec<u32>) -> String {
-    let mut string = "c, ".to_string() + &city_id;
+fn city_to_string(city_id : u32, city_data : Vec<u32>) -> String {
+    let mut string = "c, ".to_string() + &city_id.to_string();
 
     for data in city_data.iter() {
         string.push_str(&(", ".to_string() + &data.to_string()));

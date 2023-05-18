@@ -63,6 +63,10 @@ func set_active():
 func set_unactive():
 	visible = false
 
+func set_coord(coord : Vector2):
+	position.x = coord.x
+	position.z = coord.y
+
 func select():
 	is_selected = true
 	for mesh in meshes:
