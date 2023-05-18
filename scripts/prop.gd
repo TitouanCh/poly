@@ -57,6 +57,12 @@ func get_height(coord, heightmap : Image):
 	coord = coord + Vector2(300, 300)
 	return heightmap.get_pixel(coord.x, coord.y).r
 
+func set_active():
+	visible = true
+
+func set_unactive():
+	visible = false
+
 func select():
 	is_selected = true
 	for mesh in meshes:

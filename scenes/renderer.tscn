@@ -8,6 +8,7 @@
 [node name="renderer" type="Node3D" node_paths=PackedStringArray("player")]
 script = ExtResource("1_amsbv")
 player = NodePath("player")
+city_scene = ExtResource("2_jurvo")
 
 [node name="player" parent="." instance=ExtResource("1_ajvuq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1048, 0, 1048)

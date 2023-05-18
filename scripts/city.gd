@@ -28,3 +28,11 @@ func setup_houses():
 	noise.frequency = 1.0
 	houses.process_material.set_shader_parameter("noisemap", ImageTexture.create_from_image(noise.get_image(512, 512)))
 	houses.emitting = true
+
+func set_active():
+	visible = true
+	name_label.visible = true
+
+func set_unactive():
+	visible = false
+	name_label.visible = false

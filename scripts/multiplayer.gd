@@ -9,6 +9,7 @@ var _client = Client.new()
 
 signal received_chat_message(content : String)
 signal received_start_game
+signal received_city(city_data : Array)
 
 func _ready() -> void:
 	_client.connected.connect(_handle_client_connected)
@@ -26,15 +27,23 @@ func _handle_client_connected() -> void:
 	print("Client connected to server.")
 
 func _handle_client_data(data) -> void:
-	print("Received data: ", data.get_string_from_utf8(), " or ", data)
+	var data_str = data.get_string_from_utf8()
+	print("Received data: ", data_str, " or ", data)
 	
-	# Chat message
-	if data[0] == 109:
-		received_chat_message.emit(data.slice(1).get_string_from_utf8())
+	var data_arr = data_str.split("|end|")
 	
-	# Start game message
-	if data[0] == 115:
-		received_start_game.emit()
+	for i in range(len(data_arr) - 1):
+		# Chat message
+		if data_arr[i][0] == "m":
+			received_chat_message.emit(data_arr[i].lstrip("m"))
+		
+		# Start game message
+		if data_arr[i][0] == "s":
+			received_start_game.emit()
+		
+		# City placement
+		if data_arr[i][0] == "c":
+			received_city.emit(data_arr[i].lstrip("c, ").split(", "))
 
 func _handle_client_disconnected() -> void:
 	print("Client disconnected from server.")
