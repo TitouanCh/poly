@@ -57,9 +57,14 @@ impl Chat {
     async fn send_message_to_all(&mut self, msg: Message) {
         let mut users_to_remove = Vec::new();
 
+        // Add unique identifier to content start
+        let mut to_send_back = vec![103];
+        to_send_back.extend(msg.content);
+        
+        // Send the message to every user connected to the chat
         for (user, peer) in &self.connected {
             info!("{}: Sent message back to {}", self.id, user);
-            for to_send in [msg.content.clone(), msg.user.as_bytes().to_vec()] {
+            for to_send in [to_send_back.clone(), msg.user.as_bytes().to_vec()] {
                 match peer.send(to_send).await {
                     Ok(_) => {},
                     Err(_) => {

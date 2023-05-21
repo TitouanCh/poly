@@ -8,6 +8,7 @@ const Client = preload("res://scripts/client.gd")
 var _client = Client.new()
 
 signal received_chat_message(content : String)
+signal received_global_chat_message(content : String, username : String)
 signal received_start_game
 signal received_city(city_data : Array)
 
@@ -35,11 +36,22 @@ func _handle_client_data(data) -> void:
 	print("Received data: ", data_str, " or ", data)
 	
 	var data_arr = data_str.split("|end|")
+	var ignore_next = false
 	
 	for i in range(len(data_arr) - 1):
+		if ignore_next:
+			ignore_next = false
+			continue
+		
 		# Chat message
 		if data_arr[i][0] == "m":
-			received_chat_message.emit(data_arr[i].lstrip("m"))
+			received_chat_message.emit(data_arr[i].trim_prefix("m"))
+		
+		# Global chat message
+		if data_arr[i][0] == "g":
+			received_global_chat_message.emit(data_arr[i].trim_prefix("g"), data_arr[i + 1])
+			# Skip next message which is username
+			ignore_next = true
 		
 		# Start game message
 		if data_arr[i][0] == "s":
@@ -47,7 +59,7 @@ func _handle_client_data(data) -> void:
 		
 		# City placement
 		if data_arr[i][0] == "c":
-			received_city.emit(data_arr[i].lstrip("c, ").split(", "))
+			received_city.emit(data_arr[i].trim_prefix("c, ").split(", "))
 
 func _handle_client_disconnected() -> void:
 	print("Client disconnected from server.")

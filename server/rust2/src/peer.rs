@@ -81,10 +81,8 @@ impl Peer {
         if bytes[0..3] == [103, 108, 111] {
             match self.global_chat_sender.clone() {
                 Some(tx) => {
-                    let mut to_send_back = vec![67];
-                    to_send_back.extend(bytes[3..].to_vec());
                     tx.send(
-                        Message { user: self.username.clone(), content: to_send_back }  
+                        Message { user: self.username.clone(), content: bytes[3..].to_vec() }  
                     ).await.unwrap();
                 }
                 None => {}

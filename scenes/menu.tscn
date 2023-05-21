@@ -23,14 +23,22 @@ offset_right = 40.0
 offset_bottom = 23.0
 text = "Multiplayer"
 
-[node name="username_input" type="TextEdit" parent="multiplayer"]
-layout_mode = 0
-offset_left = 62.0
-offset_top = 127.0
-offset_right = 362.0
-offset_bottom = 167.0
+[node name="browser" type="Control" parent="multiplayer"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="connect_button" type="Button" parent="multiplayer"]
+[node name="create_new_game" type="Button" parent="multiplayer/browser"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="login" type="Control" parent="multiplayer"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="connect_button" type="Button" parent="multiplayer/login"]
 layout_mode = 0
 offset_left = 168.0
 offset_top = 176.0
@@ -38,19 +46,41 @@ offset_right = 240.0
 offset_bottom = 207.0
 text = "Connect"
 
-[node name="global_chat" type="RichTextLabel" parent="multiplayer"]
-visible = false
-layout_mode = 0
-offset_left = 50.0
-offset_top = 50.0
-offset_right = 350.0
-offset_bottom = 350.0
-text = "Bob: Yo"
-
-[node name="global_chat_input" type="TextEdit" parent="multiplayer"]
-visible = false
+[node name="username_input" type="TextEdit" parent="multiplayer/login"]
 layout_mode = 0
 offset_left = 62.0
-offset_top = 300.0
+offset_top = 127.0
 offset_right = 362.0
-offset_bottom = 340.0
+offset_bottom = 167.0
+
+[node name="lobby" type="Control" parent="multiplayer"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="global_chat" type="Control" parent="multiplayer"]
+visible = false
+anchors_preset = 0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 90.0
+offset_bottom = 90.0
+
+[node name="title" type="Label" parent="multiplayer/global_chat"]
+layout_mode = 0
+offset_right = 90.0
+offset_bottom = 40.0
+text = "Global Chat"
+
+[node name="chat" type="RichTextLabel" parent="multiplayer/global_chat"]
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 300.0
+text = "Bob: Yo"
+
+[node name="input" type="TextEdit" parent="multiplayer/global_chat"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 250.0
+offset_right = 312.0
+offset_bottom = 290.0
