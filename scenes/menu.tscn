@@ -1,0 +1,56 @@
+[gd_scene load_steps=2 format=3 uid="uid://bbxvm4i4qjtrj"]
+
+[ext_resource type="Script" path="res://scripts/menu.gd" id="1_xgvna"]
+
+[node name="menu" type="Node2D"]
+script = ExtResource("1_xgvna")
+
+[node name="multiplayer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="background" type="ColorRect" parent="multiplayer"]
+layout_mode = 0
+offset_right = 400.0
+offset_bottom = 400.0
+color = Color(0.317647, 0.247059, 0.278431, 1)
+
+[node name="title" type="Label" parent="multiplayer"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Multiplayer"
+
+[node name="username_input" type="TextEdit" parent="multiplayer"]
+layout_mode = 0
+offset_left = 62.0
+offset_top = 127.0
+offset_right = 362.0
+offset_bottom = 167.0
+
+[node name="connect_button" type="Button" parent="multiplayer"]
+layout_mode = 0
+offset_left = 168.0
+offset_top = 176.0
+offset_right = 240.0
+offset_bottom = 207.0
+text = "Connect"
+
+[node name="global_chat" type="RichTextLabel" parent="multiplayer"]
+visible = false
+layout_mode = 0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 350.0
+offset_bottom = 350.0
+text = "Bob: Yo"
+
+[node name="global_chat_input" type="TextEdit" parent="multiplayer"]
+visible = false
+layout_mode = 0
+offset_left = 62.0
+offset_top = 300.0
+offset_right = 362.0
+offset_bottom = 340.0

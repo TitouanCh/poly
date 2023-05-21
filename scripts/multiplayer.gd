@@ -17,7 +17,11 @@ func _ready() -> void:
 	_client.error.connect(_handle_client_error)
 	_client.data.connect(_handle_client_data)
 	add_child(_client)
+
+func _connect(username):
 	_client.connect_to_host(HOST, PORT)
+	await get_tree().create_timer(1.0).timeout
+	_send_username(username)
 
 func _connect_after_timeout(timeout: float) -> void:
 	await get_tree().create_timer(timeout).timeout
@@ -52,6 +56,12 @@ func _handle_client_disconnected() -> void:
 func _handle_client_error() -> void:
 	print("Client error.")
 	#_connect_after_timeout(RECONNECT_TIMEOUT) # Try to reconnect after 3 seconds
+
+func _send_username(username: String):
+	_client.send(username.to_utf8_buffer())
+
+func _send_global_chat_message(message : String) -> void:
+	_client.send(("glo" + message).to_utf8_buffer())
 
 func _send_chat_message(message : String) -> void:
 	_client.send(("msg" + message).to_utf8_buffer())

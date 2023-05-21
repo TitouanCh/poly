@@ -9,7 +9,7 @@ var current_phase = phase.STANDBY
 # For now, only one selection at the time
 var selected_node : Prop = null
 
-@onready var renderer : Renderer = $flask/ether/renderer 
+@onready var renderer : Renderer = $flask/ether1/renderer 
 
 func _ready():
 	if Multiplayer:

@@ -8,7 +8,7 @@ func _ready():
 		Multiplayer.connect("received_start_game", received_start_message)
 
 func _process(delta):
-	if Input.is_action_just_pressed("chat_enter"):
+	if Input.is_action_just_pressed("chat_enter") and false:
 		if !chat_edit.has_focus():
 			chat_edit.grab_focus()
 		else:
