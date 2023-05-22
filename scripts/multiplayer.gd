@@ -23,7 +23,7 @@ func _ready() -> void:
 
 func _connect(username):
 	_client.connect_to_host(HOST, PORT)
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(RECONNECT_TIMEOUT).timeout
 	_send_username(username)
 	USERNAME = username
 
@@ -63,6 +63,14 @@ func _handle_client_data(data) -> void:
 		# City placement
 		if data_arr[i][0] == "c":
 			received_city.emit(data_arr[i].trim_prefix("c, ").split(", "))
+		
+		# Game handler info
+		if data_arr[i][0] == "i":
+			pass
+		
+		# Game state
+		if data_arr[i][0] == "a":
+			pass
 
 func _handle_client_disconnected() -> void:
 	print("Client disconnected from server.")

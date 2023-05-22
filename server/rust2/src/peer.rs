@@ -26,7 +26,8 @@ pub struct Peer {
     receiver: mpsc::Receiver<Vec<u8>>,
     sender: mpsc::Sender<Vec<u8>>,
     
-    global_chat_sender: Option<mpsc::Sender<Message>>
+    global_chat_sender: Option<mpsc::Sender<Message>>,
+    game_handler_sender: Option<mpsc::Sender<Message>>
 }
 
 impl Peer {
@@ -35,13 +36,19 @@ impl Peer {
         info!("Connection from {}", remote_ip);
         let (tx, rx) = mpsc::channel(32);
 
-        Peer { connexion, username, _ip: remote_ip, receiver: rx, sender: tx, global_chat_sender: None}
+        Peer { connexion, username, _ip: remote_ip, receiver: rx, sender: tx, global_chat_sender: None, game_handler_sender: None}
     }
 
     pub async fn connect_to_global_chat(&mut self, global_chat_tx: mpsc::Sender<Message>, global_chat_connector: mpsc::Sender<UserSender>) {
         let to_send = UserSender {user: self.username.clone(), sender: self.sender.clone()};
         global_chat_connector.send(to_send).await.unwrap();
         self.global_chat_sender = Some(global_chat_tx);
+    }
+
+    pub async fn connect_to_game_handler(&mut self, game_handler_tx: mpsc::Sender<Message>, game_handler_connector: mpsc::Sender<UserSender>) {
+        let to_send = UserSender {user: self.username.clone(), sender: self.sender.clone()};
+        game_handler_connector.send(to_send).await.unwrap();
+        self.game_handler_sender = Some(game_handler_tx);
     }
 
     pub async fn handle(&mut self) -> bool { // returns false if disconnect
