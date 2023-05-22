@@ -1,18 +1,21 @@
 extends Node2D
 
 @onready var title = $multiplayer/title
-@onready var background = $multiplayer/background
+@onready var background = $background
 
 # Login
-@onready var login = $multiplayer/login
-@onready var connect_button = $multiplayer/login/connect_button
-@onready var username_input = $multiplayer/login/username_input
+@onready var login = $multiplayer/hbox/login
+@onready var connect_button = $multiplayer/hbox/login/connect_button
+@onready var username_input = $multiplayer/hbox/login/username_input
 
 # Global chat
-@onready var global_chat = $multiplayer/global_chat
-@onready var global_chat_title = $multiplayer/global_chat/title
-@onready var global_chat_text = $multiplayer/global_chat/chat
-@onready var global_chat_input = $multiplayer/global_chat/input
+@onready var global_chat = $multiplayer/hbox/global_chat
+@onready var global_chat_title = $multiplayer/hbox/global_chat/title
+@onready var global_chat_text = $multiplayer/hbox/global_chat/chat
+@onready var global_chat_input = $multiplayer/hbox/global_chat/input
+
+# Game browser
+@onready var game_browser = $multiplayer/hbox/browser
 
 @export var dimensions : Vector2 = Vector2(800, 800)
 
@@ -36,7 +39,7 @@ func _process(delta):
 				_connect()
 		
 		# Global chat --
-		if phase == "browser":
+		elif phase == "browser":
 			if !global_chat_input.has_focus():
 				global_chat_input.grab_focus()
 			elif global_chat_input.text != "":
@@ -54,6 +57,7 @@ func _connect():
 		
 		login.visible = false
 		global_chat.visible = true
+		game_browser.visible = true
 		
 		phase = "browser"
 
@@ -61,32 +65,11 @@ func resize(d = dimensions):
 	# Global
 	dimensions = d
 	background.size = dimensions
-	
-	# Login
-	connect_button.position = dimensions/2 - connect_button.size/2 + Vector2(0, 48)
-	username_input.position = dimensions/2 - username_input.size/2 + Vector2(0, -24)
-	
-	# Chat
-	global_chat_text.size.y = dimensions.y - 100 - 60
-	global_chat_text.size.x = dimensions.x * 0.333
-	global_chat_text.position.x = 5
-	global_chat_text.position.y = 50
-	
-	global_chat_input.position.x = 5
-	global_chat_input.position.y = global_chat_text.size.y + 10 + 50
-	
-	global_chat_title.position.x = 5
-	global_chat_title.position.y = 10
-	
-	global_chat_input.size.x = dimensions.x * 0.333 - 10
-	global_chat_input.position.x = 5
-	
-	global_chat.position.y = 50
-	global_chat.position.x = 0.667 * dimensions.x
+	$multiplayer.size = dimensions
 
 func center():
 	var screen_size = DisplayServer.window_get_size()
 	position = Vector2(screen_size.x, screen_size.y)/2 - dimensions/2
 
 func received_global_message(content : String, user : String):
-	global_chat_text.add_text("\n" + user + ": " + content)
+	global_chat_text.text += "\n[color=pink]" + user + "[/color]: " + content

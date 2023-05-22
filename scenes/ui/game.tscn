@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://tvfkcwqic2sp"]
+
+[ext_resource type="Script" path="res://scripts/ui/game.gd" id="1_osraq"]
+
+[node name="game" type="Panel"]
+custom_minimum_size = Vector2(0, 40)
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("1_osraq")
+
+[node name="hbox" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_right = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="title" type="Label" parent="hbox"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Tiryon Lake"
+
+[node name="description" type="RichTextLabel" parent="hbox"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "3/4 players"
+fit_content = true
+scroll_active = false
+
+[node name="join" type="Button" parent="hbox"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Join"

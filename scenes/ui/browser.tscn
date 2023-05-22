@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxk76kplc5yk7"]
+
+[ext_resource type="PackedScene" uid="uid://tvfkcwqic2sp" path="res://scenes/ui/game.tscn" id="1_6m8vl"]
+[ext_resource type="Script" path="res://scripts/ui/browser.gd" id="1_f18xs"]
+
+[node name="browser" type="VBoxContainer"]
+offset_right = 500.0
+offset_bottom = 400.0
+script = ExtResource("1_f18xs")
+
+[node name="sbox" type="ScrollContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="game_list" type="VBoxContainer" parent="sbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="game" parent="sbox/game_list" instance=ExtResource("1_6m8vl")]
+layout_mode = 2
+
+[node name="button_bar" type="HBoxContainer" parent="."]
+layout_mode = 2
+alignment = 1
+
+[node name="host_game" type="Button" parent="button_bar"]
+layout_mode = 2
+text = "create new game"
+
+[node name="refresh" type="Button" parent="button_bar"]
+layout_mode = 2
+text = "refresh"

@@ -4,6 +4,8 @@ const HOST: String = "127.0.0.1"
 const PORT: int = 3000
 const RECONNECT_TIMEOUT: float = 3.0
 
+var USERNAME: String = ""
+
 const Client = preload("res://scripts/client.gd")
 var _client = Client.new()
 
@@ -23,6 +25,7 @@ func _connect(username):
 	_client.connect_to_host(HOST, PORT)
 	await get_tree().create_timer(1.0).timeout
 	_send_username(username)
+	USERNAME = username
 
 func _connect_after_timeout(timeout: float) -> void:
 	await get_tree().create_timer(timeout).timeout
