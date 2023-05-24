@@ -1,101 +1,89 @@
-use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt},
-    sync::{mpsc}
-};
-
-use std::{
-    net::IpAddr
-};
-
+use async_trait::async_trait;
+use tokio::io::AsyncReadExt;
+use tokio::sync::mpsc;
+use std::{collections::HashMap, net::IpAddr};
 use log::info;
 
-use crate::connexion::Connexion;
-use crate::chat::{Message};
+use crate::link::message;
+use crate::link::{
+    userinfo::UserInfo,
+    user::User,
+    link::Link,
+    linkable::Linkable,
+    message::Message,
+    satellite::Satellite
+};
 
-#[derive(Clone, Debug)]
-pub struct UserSender<T, K> {
-    pub user: String,
-    pub sender: mpsc::Sender<T>,
-    pub back: mpsc::Sender<UserSender<K>>
-}
+use crate::connexion::Connexion;
 
 pub struct Peer {
-    connexion: Connexion,
-    pub username: String,
+    user: User,
+    message_history: Vec<Message>,
     _ip: IpAddr,
-    
-    // Used to receives bytes that need to be transfered to peer
-    bytes_receiver: mpsc::Receiver<Vec<u8>>,
-    // Used to send bytes to this peer
-    bytes_sender: mpsc::Sender<Vec<u8>>,
-    
-    // Used to receive objects that want to connect to this peer
-    user_receiver: mpsc::Receiver<UserSender<Message, Vec<u8>>>,
-    user_sender: mpsc::Receiver<UserSender<Message, Vec<u8>>>,
+    connexion: Connexion,
+    connected: HashMap<UserInfo, mpsc::Sender<Message>>
+}
 
-    // Used to store senders
-    global_chat_sender: Option<mpsc::Sender<Message>>,
-    game_handler_sender: Option<mpsc::Sender<Message>>,
-    current_game_sender: Option<mpsc::Sender<Message>>
+#[async_trait]
+impl Linkable for Peer {
+    fn id(&self) -> u32 { self.user.info.id.clone() }
+    fn info(&self) -> UserInfo { self.user.info.clone() }
+    fn mut_message(&mut self) -> &mut Satellite<Message> { &mut self.user.message}
+    fn mut_link(&mut self) -> &mut Satellite<Link> { &mut self.user.link }
+    fn mut_message_and_link(&mut self) -> (&mut Satellite<Message>, &mut Satellite<Link>) { (&mut self.user.message, &mut self.user.link) }
+    fn mut_connected(&mut self) -> &mut HashMap<UserInfo,mpsc::Sender<Message> > { &mut self.connected }
+    
+    fn add_to_history(&mut self, message:Message) {
+        self.message_history.push(message);
+    }
+
+    async fn handle(&mut self) {
+        let mut buffer = [0u8; 1024];
+        tokio::select! {
+            received_message = self.user.message.receiver.recv() => {
+                info!("{}: Received message", self.info().to_string());
+                let message = received_message.unwrap();
+                self.add_to_history(message.clone());
+                self.handle_message(message).await;
+            }
+
+            received_link = self.user.link.receiver.recv() => {
+                info!("{}: Received new link", self.info().to_string());
+                let link = received_link.unwrap(); 
+                self.add_linked(link).await;
+            }
+
+            received_socket = self.connexion.socket.read(&mut buffer) => {
+                let bytes_read = received_socket.unwrap();
+                if bytes_read == 0 {
+                    // Disconnected
+                }
+                info!("{}: Received bytes", self.user.info.to_string());
+                let bytes_read = buffer[0..bytes_read].to_vec();
+                match String::from_utf8(bytes_read[0..3].to_vec()) {
+                    Ok(t) => info!("They sent: {} | {:?}", t, bytes_read[3..].to_vec()),
+                    Err(_e) => info!("They sent: {:?}", bytes_read.clone())
+                }
+                self.interpret_bytes(bytes_read).await;
+            }
+        }
+    }
+
+    async fn handle_message(&mut self, message: Message) {}
 }
 
 impl Peer {
     pub fn new(connexion: Connexion, username: String) -> Self {
         let remote_ip = connexion.socket.peer_addr().unwrap().ip();
         info!("Connection from {}", remote_ip);
-        let (tx, rx) = mpsc::channel(32);
-        let (ctx, crx) = mpsc::channel(32);
-
-        Peer { connexion, username, _ip: remote_ip, bytes_receiver: rx, bytes_sender: tx, user_receiver: crx, user_sender: ctx, global_chat_sender: None, game_handler_sender: None, current_game_sender: None}
-    }
-
-    pub async fn connect_to_global_chat(&mut self, global_chat_tx: mpsc::Sender<Message>, global_chat_connector: mpsc::Sender<UserSender<Message, Vec<u8>>>) {
-        // Quick connect, no back and forth
-        let to_send = UserSender {user: self.username.clone(), sender: self.sender.clone(), back: self.user_sender.clone()};
-        global_chat_connector.send(to_send).await.unwrap();
-        self.global_chat_sender = Some(global_chat_tx);
-    }
-
-    pub async fn connect_to_game_handler(&mut self, game_handler_tx: mpsc::Sender<Message>, game_handler_connector: mpsc::Sender<UserSender<Message, Vec<u8>>>) {
-        let to_send = UserSender {user: self.username.clone(), sender: self.sender.clone()};
-        game_handler_connector.send(to_send).await.unwrap();
-        self.game_handler_sender = Some(game_handler_tx);
-    }
-
-    pub async fn handle(&mut self) -> bool { // returns false if disconnect
-        let mut buffer = [0u8; 1024];
-        tokio::select! {
-            received = self.receiver.recv() => {
-                let mut received = received.unwrap();
-                let mut end : Vec<u8> = vec![124, 101, 110, 100, 124]; //|end|
-                received.append(&mut end);
-                let bytes: &[u8] = &received;
-                self.connexion.socket.write_all(bytes).await.unwrap();
-                info!("We sent back: {:?} or {}", bytes, String::from_utf8(received.clone()).unwrap());
-                true
-            }
-
-            incoming = self.connexion.socket.read(&mut buffer) => {
-                let bytes_read = incoming.unwrap();
-
-                if bytes_read == 0 {
-                    return false;
-                }
-
-                let incoming = buffer[0..bytes_read].to_vec();
-
-                match String::from_utf8(incoming[0..3].to_vec()) {
-                    Ok(t) => info!("They sent: {} | {:?}", t, incoming[3..].to_vec()),
-                    Err(_e) => info!("They sent: {:?}", incoming.clone())
-                }
-
-                self.interpret_bytes(incoming).await;
-                true
-            }
-        }
+        let (user, link_sender) = User::new(0, username);
+        let message_history = Vec::new();
+        let connected = HashMap::new();
+        Peer { connexion, user, _ip: remote_ip, connected, message_history}
     }
 
     async fn interpret_bytes(&self, bytes: Vec<u8>) {
+        /*
         if bytes[0..3] == [103, 108, 111] {
             match self.global_chat_sender.clone() {
                 Some(tx) => {
@@ -106,6 +94,6 @@ impl Peer {
                 None => {}
             }
         }
+         */
     }
-
 }

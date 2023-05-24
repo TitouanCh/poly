@@ -57,7 +57,8 @@ impl Peer {
     }
 
     pub async fn connect_to_game_handler(&mut self, game_handler_tx: mpsc::Sender<Message>, game_handler_connector: mpsc::Sender<UserSender<Message, Vec<u8>>>) {
-        let to_send = UserSender {user: self.username.clone(), sender: self.sender.clone()};
+        // Quick connect, no back and forth
+        let to_send = UserSender {user: self.username.clone(), sender: self.sender.clone(), back: self.user_sender.clone()};
         game_handler_connector.send(to_send).await.unwrap();
         self.game_handler_sender = Some(game_handler_tx);
     }

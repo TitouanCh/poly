@@ -1,82 +1,70 @@
-use tokio::{
-    sync::mpsc
-};
-
-use std::{
-    collections::HashMap,
-};
-
+use async_trait::async_trait;
+use tokio::sync::mpsc;
+use std::collections::HashMap;
 use log::info;
 
-use crate::peer::UserSender;
-
-#[derive(Clone, Debug)]
-pub struct Message {
-    pub sender: String,
-    pub bytes: Vec<u8>
-}
+use crate::link::{
+    userinfo::UserInfo,
+    user::User,
+    link::Link,
+    linkable::Linkable,
+    message::Message,
+    satellite::Satellite
+};
 
 pub struct Chat {
-    id: String,
+    user: User,
     message_history: Vec<Message>,
-    message_receiver: mpsc::Receiver<Message>,
-    connexion_receiver: mpsc::Receiver<UserSender>,
-    connected: HashMap<String, mpsc::Sender<Vec<u8>>>
+    connected: HashMap<UserInfo, mpsc::Sender<Message>>
+}
+
+#[async_trait]
+impl Linkable for Chat {
+    fn id(&self) -> u32 { self.user.info.id.clone() }
+    fn info(&self) -> UserInfo { self.user.info.clone() }
+    fn mut_message(&mut self) -> &mut Satellite<Message> { &mut self.user.message}
+    fn mut_link(&mut self) -> &mut Satellite<Link> { &mut self.user.link }
+    fn mut_message_and_link(&mut self) -> (&mut Satellite<Message>, &mut Satellite<Link>) { (&mut self.user.message, &mut self.user.link) }
+    fn mut_connected(&mut self) -> &mut HashMap<UserInfo,mpsc::Sender<Message> > { &mut self.connected }
+    
+    fn add_to_history(&mut self, message:Message) {
+        self.message_history.push(message);
+    }
+
+    async fn handle_message(&mut self, message: Message) {
+        self.send_message_to_all(message).await;
+    }
 }
 
 impl Chat {
-    pub fn new(id: String) -> (Self, mpsc::Sender<Message>, mpsc::Sender<UserSender>) {
+    pub fn new(id: u32) -> (Self, mpsc::Sender<Link>) {
+        let (user, link_sender) = User::new(id, "Chat".to_string());
         let message_history = Vec::new();
         let connected = HashMap::new();
-        let (tx, rx) = mpsc::channel(32);
-        let (ctx, crx) = mpsc::channel(32);
-        (Chat {id, message_history, message_receiver: rx, connexion_receiver: crx, connected}, tx, ctx)
+        (Chat {user, message_history, connected}, link_sender)
     }
 
-    fn add_sender(&mut self, user: String, tx: mpsc::Sender<Vec<u8>>) {
-        self.connected.insert(user, tx);
-    }
-    
-    pub async fn handle(&mut self) {
-        tokio::select! {
-            received_chat = self.message_receiver.recv() => {
-                info!("{}: Received chat message", self.id);
-                let message = received_chat.unwrap();
-                self.message_history.push(message.clone());
-                self.send_message_to_all(message).await;
-            }
-
-            received_connexion = self.connexion_receiver.recv() => {
-                info!("{}: Received connexion", self.id);
-                let info = received_connexion.unwrap(); 
-                self.add_sender(info.user, info.sender);
-            }
-        }
-    }
-
-    async fn send_message_to_all(&mut self, msg: Message) {
+    async fn send_message_to_all(&mut self, message: Message) {
         let mut users_to_remove = Vec::new();
 
         // Add unique identifier to content start
-        let mut to_send_back = vec![103];
-        to_send_back.extend(msg.content);
+        let mut message = message.clone();
+        let mut send_back_bytes = vec![103];
+        send_back_bytes.extend(message.bytes);
         
+        message.bytes = send_back_bytes;
+
         // Send the message to every user connected to the chat
         for (user, peer) in &self.connected {
-            info!("{}: Sent message back to {}", self.id, user);
-            for to_send in [to_send_back.clone(), msg.user.as_bytes().to_vec()] {
-                match peer.send(to_send).await {
-                    Ok(_) => {},
-                    Err(_) => {
-                        users_to_remove.push(user.clone());
-                    }
-                };
-            }
+            match peer.send(message.clone()).await {
+                Ok(_) => {info!("{}: Sent message back to {}", self.user.info.to_string(), user.to_string());},
+                Err(_) => {users_to_remove.push(user.clone());}
+            };
         }
 
         for user in users_to_remove.iter() {
             self.connected.remove_entry(user);
-            info!("{}: {} appears to be disconnected, he was removed from the chat", self.id, user);
+            info!("{}: {} appears to be disconnected, he was removed from the chat", self.user.info.to_string(), user.to_string());
         }
     }
 }

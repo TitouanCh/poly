@@ -6,9 +6,7 @@ use log::info;
 use env_logger::Env;
 
 
-use rust::connexion::Connexion;
-use rust::chat::Chat;
-use rust::gamehandler::GameHandler;
+use rust::link::user;
 
 #[tokio::main]
 async fn main() {
@@ -21,7 +19,8 @@ async fn main() {
     info!("Starting global chat");
 
     // Start global chat
-    let (mut global_chat, global_chat_sender, global_chat_connector) = Chat::new("global".to_string());
+    let (mut global_chat, global_chat_connector) = Chat::new("global".to_string());
+
     tokio::spawn(async move {
         loop {
             let _ = global_chat.handle().await;

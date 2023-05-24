@@ -2,3 +2,4 @@
 .godot/
 server/rust/target/
 server/rust2/target/
+server/rust3/target/

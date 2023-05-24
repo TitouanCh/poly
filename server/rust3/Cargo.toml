@@ -8,3 +8,4 @@ tokio = { version = "1", features = ["full"] }
 bimap = { version = "0.6.3" }
 log = {version="0.4.17"}
 env_logger= {version="0.10.0"}
+async-trait = {version="0.1.68"}
