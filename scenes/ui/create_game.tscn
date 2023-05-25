@@ -1,0 +1,65 @@
+[gd_scene load_steps=3 format=3 uid="uid://wvx6ro1g1lei"]
+
+[ext_resource type="Script" path="res://scripts/ui/create_game.gd" id="1_8888m"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gvvtj"]
+bg_color = Color(0.180392, 0.141176, 0.121569, 1)
+
+[node name="create_game" type="Panel"]
+custom_minimum_size = Vector2(300, 300)
+offset_right = 300.0
+offset_bottom = 300.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_gvvtj")
+script = ExtResource("1_8888m")
+
+[node name="vbox" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 300.0
+
+[node name="title" type="Label" parent="vbox"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Create new game"
+
+[node name="game_name" type="HSplitContainer" parent="vbox"]
+layout_mode = 2
+collapsed = true
+
+[node name="info" type="Label" parent="vbox/game_name"]
+layout_mode = 2
+text = "Name:"
+
+[node name="input" type="LineEdit" parent="vbox/game_name"]
+layout_mode = 2
+
+[node name="^turn this into scene" type="Node" parent="vbox/game_name"]
+
+[node name="number_of_players" type="HSplitContainer" parent="vbox"]
+layout_mode = 2
+collapsed = true
+
+[node name="info" type="Label" parent="vbox/number_of_players"]
+layout_mode = 2
+text = "Number of players: "
+
+[node name="input" type="SpinBox" parent="vbox/number_of_players"]
+layout_mode = 2
+min_value = 1.0
+max_value = 16.0
+value = 4.0
+
+[node name="^turn this into scene" type="Node" parent="vbox/number_of_players"]
+
+[node name="confirm" type="Button" parent="vbox"]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Create"
+
+[node name="cancel" type="Button" parent="vbox"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Cancel"
+
+[connection signal="pressed" from="vbox/confirm" to="." method="_on_confirm_pressed"]
+[connection signal="pressed" from="vbox/cancel" to="." method="_on_cancel_pressed"]

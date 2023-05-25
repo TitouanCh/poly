@@ -164,3 +164,13 @@ func _send_placed_city(coord : Vector2i):
 	message.encode_u32(7, coord.y)
 
 	_client.send(message)
+
+func _send_create_game(game_name: String, max_players: int):
+	# Format: ghi + 24 bytes for the game name + 1 byte for the max player number
+	var message = PackedByteArray("ghc".to_utf8_buffer())
+	while len(game_name) < 24:
+		game_name += " "
+	message += game_name.to_utf8_buffer()
+	message.append(max_players)
+	
+	_client.send(message)
