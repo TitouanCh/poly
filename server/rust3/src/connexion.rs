@@ -1,6 +1,7 @@
 use tokio::{
     net::TcpStream,
-    io::AsyncReadExt
+    io::AsyncReadExt,
+    sync::mpsc
 };
 
 use std::{
@@ -10,6 +11,8 @@ use std::{
 use log::info;
 
 use crate::peer::Peer;
+
+use crate::link::link::Link;
 
 pub struct Connexion {
     pub socket: TcpStream,
@@ -21,7 +24,7 @@ impl Connexion {
         Connexion {socket, addr}
     }
 
-    pub async fn get_peer(mut self) -> Peer {
+    pub async fn get_peer(mut self) -> (Peer, mpsc::Sender<Link>) {
         let mut buffer = [0u8; 1024];
         tokio::select!(
             result = self.socket.read(&mut buffer) => {

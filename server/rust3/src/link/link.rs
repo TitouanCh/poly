@@ -4,7 +4,7 @@ use crate::link::{
     message::Message
 };
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Link {
     pub info: UserInfo,
     pub message_sendback: mpsc::Sender<Message>,

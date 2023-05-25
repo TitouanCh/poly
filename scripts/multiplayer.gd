@@ -35,42 +35,107 @@ func _handle_client_connected() -> void:
 	print("Client connected to server.")
 
 func _handle_client_data(data) -> void:
-	var data_str = data.get_string_from_utf8()
-	print("Received data: ", data_str, " or ", data)
+	var messages = decode_bytes(data)
 	
-	var data_arr = data_str.split("|end|")
-	var ignore_next = false
+	for message in messages:
+		# Global chat message
+		if message["content"][0] == "g":
+			received_global_chat_message.emit(message["content"][1].get_string_from_utf8().trim_prefix("g"), message["user"][1])
 	
-	for i in range(len(data_arr) - 1):
-		if ignore_next:
-			ignore_next = false
+#	var data_str = data.get_string_from_utf8()
+#	print("Received data: ", data_str, " or ", data)
+#
+#	var data_arr = data_str.split("|end|")
+#	var ignore_next = false
+#
+#	for i in range(len(data_arr) - 1):
+#		if ignore_next:
+#			ignore_next = false
+#			continue
+#
+#		# Chat message
+#		if data_arr[i][0] == "m":
+#			received_chat_message.emit(data_arr[i].trim_prefix("m"))
+#
+#		# Global chat message
+#		if data_arr[i][0] == "g":
+#			received_global_chat_message.emit(data_arr[i].trim_prefix("g"), data_arr[i + 1])
+#			# Skip next message which is username
+#			ignore_next = true
+#
+#		# Start game message
+#		if data_arr[i][0] == "s":
+#			received_start_game.emit()
+#
+#		# City placement
+#		if data_arr[i][0] == "c":
+#			received_city.emit(data_arr[i].trim_prefix("c, ").split(", "))
+#
+#		# Game handler info
+#		if data_arr[i][0] == "i":
+#			pass
+#
+#		# Game state
+#		if data_arr[i][0] == "a":
+#			pass
+
+# Decodes incoming byte stream, returns an array of message
+func decode_bytes(bytes : Array) -> Array:
+	var messages_bytes = _seperate_byte_array(bytes, [124, 101, 110, 100, 124])
+	var messages_decoded = []
+	
+	for message_bytes in messages_bytes:
+		var fragmented = _seperate_byte_array(message_bytes, [124, 117, 115, 101, 114, 124])
+		
+		print(fragmented)
+		
+		if len(fragmented) != 2:
+			print("Error decoding message: " + str(message_bytes))
 			continue
 		
-		# Chat message
-		if data_arr[i][0] == "m":
-			received_chat_message.emit(data_arr[i].trim_prefix("m"))
+		# ---------- Message Structure : {user, content} --------
+		# --- with :
+		# user : [u32, string]
+		# content : [string (first three bytes), rest of the bytes]
+		# -------------------------------------------------------
 		
-		# Global chat message
-		if data_arr[i][0] == "g":
-			received_global_chat_message.emit(data_arr[i].trim_prefix("g"), data_arr[i + 1])
-			# Skip next message which is username
-			ignore_next = true
+		var message = {
+			"user" : [
+				# id
+				fragmented[0].decode_u32(0),
+				# name
+				fragmented[0].slice(4, len(fragmented[0])).get_string_from_utf8()
+			],
+			"content" : [
+				# order
+				fragmented[1].slice(0, 1).get_string_from_utf8(),
+				# bytes
+				fragmented[1].slice(1, len(fragmented[1]))
+			]
+		}
 		
-		# Start game message
-		if data_arr[i][0] == "s":
-			received_start_game.emit()
+		messages_decoded.append(message)
 		
-		# City placement
-		if data_arr[i][0] == "c":
-			received_city.emit(data_arr[i].trim_prefix("c, ").split(", "))
-		
-		# Game handler info
-		if data_arr[i][0] == "i":
-			pass
-		
-		# Game state
-		if data_arr[i][0] == "a":
-			pass
+	return messages_decoded
+
+# Seperates a bytes array by an array of bytes
+func _seperate_byte_array(array : Array, separator : Array) -> Array:
+	separator.append("ok")
+	var last_idx = 0
+	var result = []
+	for i in range(len(array) - len(separator) + 2):
+		for j in range(len(separator)):
+			if separator[j] is String:
+				result.append(PackedByteArray(array.slice(last_idx, i)))
+				last_idx = i + j
+				break
+			if !(separator[j] == array[i + j]):
+				break
+	
+	if last_idx < len(array):
+		result.append(PackedByteArray(array.slice(last_idx, len(array))))
+	
+	return result
 
 func _handle_client_disconnected() -> void:
 	print("Client disconnected from server.")

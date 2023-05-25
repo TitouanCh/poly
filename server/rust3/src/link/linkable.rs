@@ -16,6 +16,10 @@ pub trait Linkable {
     
     fn info(&self) -> UserInfo;
 
+    fn message_sender(&self) -> mpsc::Sender<Message>;
+
+    fn link_sender(&self) -> mpsc::Sender<Link>;
+
     fn mut_message(&mut self) -> &mut Satellite<Message>;
 
     fn mut_link(&mut self) -> &mut Satellite<Link>;
@@ -45,20 +49,21 @@ pub trait Linkable {
     }
 
     async fn add_linked(&mut self, link: Link) {
+        let self_link = self.as_link(true);
         self.mut_connected().insert(link.info, link.message_sendback);
         
         if !link.dont_respond {
-            link.connexion_sendback.send(self.as_link(true)).await.unwrap();
+            link.connexion_sendback.send(self_link).await.unwrap();
         }
     }
 
     async fn handle_message(&mut self, _message: Message) {}
 
-    fn as_link(&mut self, dont_respond: bool) -> Link {
+    fn as_link(&self, dont_respond: bool) -> Link {
         Link { 
             info: self.info(),
-            message_sendback: self.mut_message().sender.clone(),
-            connexion_sendback: self.mut_link().sender.clone(),
+            message_sendback: self.message_sender(),
+            connexion_sendback: self.link_sender(),
             dont_respond: dont_respond
         }
     }

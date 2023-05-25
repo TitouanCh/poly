@@ -1,10 +1,9 @@
 use async_trait::async_trait;
-use tokio::io::AsyncReadExt;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::sync::mpsc;
 use std::{collections::HashMap, net::IpAddr};
 use log::info;
 
-use crate::link::message;
 use crate::link::{
     userinfo::UserInfo,
     user::User,
@@ -28,6 +27,8 @@ pub struct Peer {
 impl Linkable for Peer {
     fn id(&self) -> u32 { self.user.info.id.clone() }
     fn info(&self) -> UserInfo { self.user.info.clone() }
+    fn message_sender(&self) -> mpsc::Sender<Message> { self.user.message.sender.clone() }
+    fn link_sender(&self) -> mpsc::Sender<Link> { self.user.link.sender.clone() }
     fn mut_message(&mut self) -> &mut Satellite<Message> { &mut self.user.message}
     fn mut_link(&mut self) -> &mut Satellite<Link> { &mut self.user.link }
     fn mut_message_and_link(&mut self) -> (&mut Satellite<Message>, &mut Satellite<Link>) { (&mut self.user.message, &mut self.user.link) }
@@ -69,31 +70,45 @@ impl Linkable for Peer {
         }
     }
 
-    async fn handle_message(&mut self, message: Message) {}
+    async fn handle_message(&mut self, message: Message) {
+        let mut bytes = message.as_bytes();
+        let mut end : Vec<u8> = vec![124, 101, 110, 100, 124]; //|end|
+        bytes.append(&mut end);
+        let bytes: &[u8] = &bytes;
+        self.connexion.socket.write_all(bytes).await.unwrap();
+        info!("{}: We sent back: {:?} or {}", self.info().to_string(), bytes, String::from_utf8(bytes.to_vec()).unwrap());
+    }
 }
 
 impl Peer {
-    pub fn new(connexion: Connexion, username: String) -> Self {
+    pub fn new(connexion: Connexion, username: String) -> (Self, mpsc::Sender<Link>) {
         let remote_ip = connexion.socket.peer_addr().unwrap().ip();
         info!("Connection from {}", remote_ip);
         let (user, link_sender) = User::new(0, username);
         let message_history = Vec::new();
         let connected = HashMap::new();
-        Peer { connexion, user, _ip: remote_ip, connected, message_history}
+        (Peer { connexion, user, _ip: remote_ip, connected, message_history}, link_sender)
     }
 
     async fn interpret_bytes(&self, bytes: Vec<u8>) {
-        /*
+        // glo: send to global to chat
         if bytes[0..3] == [103, 108, 111] {
-            match self.global_chat_sender.clone() {
+            let global_chat_sender = self.get_sender("global".to_string());
+            match global_chat_sender {
                 Some(tx) => {
                     tx.send(
-                        Message { user: self.username.clone(), content: bytes[3..].to_vec() }  
+                        Message { info: self.info(), bytes: bytes[3..].to_vec() }  
                     ).await.unwrap();
                 }
-                None => {}
+                None => { info!("{}: Is not linked to global chat", self.info().to_string()); }
             }
         }
-         */
+    }
+
+    fn get_sender(&self, name: String) -> Option<mpsc::Sender<Message>> {
+        match self.connected.get(&UserInfo { name: name, id: 0 }) {
+            Some(T) => {Some(T.clone())}
+            None => {None}
+        }
     }
 }

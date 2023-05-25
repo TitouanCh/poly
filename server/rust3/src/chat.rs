@@ -22,6 +22,8 @@ pub struct Chat {
 impl Linkable for Chat {
     fn id(&self) -> u32 { self.user.info.id.clone() }
     fn info(&self) -> UserInfo { self.user.info.clone() }
+    fn message_sender(&self) -> mpsc::Sender<Message> { self.user.message.sender.clone() }
+    fn link_sender(&self) -> mpsc::Sender<Link> { self.user.link.sender.clone() }
     fn mut_message(&mut self) -> &mut Satellite<Message> { &mut self.user.message}
     fn mut_link(&mut self) -> &mut Satellite<Link> { &mut self.user.link }
     fn mut_message_and_link(&mut self) -> (&mut Satellite<Message>, &mut Satellite<Link>) { (&mut self.user.message, &mut self.user.link) }
@@ -37,8 +39,8 @@ impl Linkable for Chat {
 }
 
 impl Chat {
-    pub fn new(id: u32) -> (Self, mpsc::Sender<Link>) {
-        let (user, link_sender) = User::new(id, "Chat".to_string());
+    pub fn new(id: u32, name: Option<String>) -> (Self, mpsc::Sender<Link>) {
+        let (user, link_sender) = User::new(id, name.unwrap_or("Chat".to_string()));
         let message_history = Vec::new();
         let connected = HashMap::new();
         (Chat {user, message_history, connected}, link_sender)
