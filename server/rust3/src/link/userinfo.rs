@@ -1,7 +1,8 @@
 #[derive(Hash, Eq, PartialEq, Clone, Debug)]
 pub struct UserInfo {
     pub name: String,
-    pub id: u32
+    pub id: u32,
+    pub what: String
 }
 
 impl UserInfo {

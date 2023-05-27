@@ -40,7 +40,7 @@ impl Linkable for Chat {
 
 impl Chat {
     pub fn new(id: u32, name: Option<String>) -> (Self, mpsc::Sender<Link>) {
-        let (user, link_sender) = User::new(id, name.unwrap_or("Chat".to_string()));
+        let (user, link_sender) = User::new(id, name.unwrap_or("Chat".to_string()), "chat".to_string());
         let message_history = Vec::new();
         let connected = HashMap::new();
         (Chat {user, message_history, connected}, link_sender)

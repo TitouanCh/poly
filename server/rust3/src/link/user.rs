@@ -14,8 +14,8 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(id: u32, name: String) -> (Self, mpsc::Sender<Link>) {
-        let info = UserInfo {id, name};
+    pub fn new(id: u32, name: String, what: String) -> (Self, mpsc::Sender<Link>) {
+        let info = UserInfo {id, name, what};
         let message = Satellite::new();
         let link = Satellite::new();
         let link_sender = link.sender.clone();

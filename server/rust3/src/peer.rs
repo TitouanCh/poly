@@ -84,7 +84,7 @@ impl Peer {
     pub fn new(connexion: Connexion, username: String) -> (Self, mpsc::Sender<Link>) {
         let remote_ip = connexion.socket.peer_addr().unwrap().ip();
         info!("Connection from {}", remote_ip);
-        let (user, link_sender) = User::new(0, username);
+        let (user, link_sender) = User::new(0, username, "peer".to_string());
         let message_history = Vec::new();
         let connected = HashMap::new();
         (Peer { connexion, user, _ip: remote_ip, connected, message_history}, link_sender)
@@ -93,7 +93,7 @@ impl Peer {
     async fn interpret_bytes(&self, bytes: Vec<u8>) {
         // glo: send to global to chat
         if bytes[0..3] == [103, 108, 111] {
-            let global_chat_sender = self.get_sender("global".to_string());
+            let global_chat_sender = self.get_sender("Global".to_string(), "chat".to_string());
             match global_chat_sender {
                 Some(tx) => {
                     tx.send(
@@ -103,11 +103,24 @@ impl Peer {
                 None => { info!("{}: Is not linked to global chat", self.info().to_string()); }
             }
         }
+
+        // gh: send to gamehandler
+        if bytes[0..2] == [103, 104] {
+            let game_handler_sender = self.get_sender("GameHandler".to_string(), "game_handler".to_string());
+            match game_handler_sender {
+                Some(tx) => {
+                    tx.send(
+                        Message { info: self.info(), bytes: bytes[2..].to_vec() }  
+                    ).await.unwrap();
+                }
+                None => { info!("{}: Is not linked to game handler", self.info().to_string()); }
+            }
+        }
     }
 
-    fn get_sender(&self, name: String) -> Option<mpsc::Sender<Message>> {
-        match self.connected.get(&UserInfo { name: name, id: 0 }) {
-            Some(T) => {Some(T.clone())}
+    fn get_sender(&self, name: String, what: String) -> Option<mpsc::Sender<Message>> {
+        match self.connected.get(&UserInfo { name: name, id: 0, what}) {
+            Some(t) => {Some(t.clone())}
             None => {None}
         }
     }

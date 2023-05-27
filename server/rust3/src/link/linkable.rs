@@ -41,8 +41,8 @@ pub trait Linkable {
             }
 
             received_link = link.receiver.recv() => {
-                info!("{}: Received new link", self.info().to_string());
                 let link = received_link.unwrap(); 
+                info!("{}: Received new link: {}", self.info().to_string(), link.info.to_string());
                 self.add_linked(link).await;
             }
         }

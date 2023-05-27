@@ -7,6 +7,7 @@ use env_logger::Env;
 
 use rust::connexion::Connexion;
 use rust::chat::Chat;
+use rust::gamehandler::GameHandler;
 
 use rust::link::{
     linkable::Linkable,
@@ -24,7 +25,7 @@ async fn main() {
     info!("Starting global chat");
 
     // Start global chat
-    let (mut global_chat, _global_chat_connector) = Chat::new(0, Some("global".to_string()));
+    let (mut global_chat, _global_chat_connector) = Chat::new(0, Some("Global".to_string()));
     let global_chat_link = global_chat.as_link(false);
 
     tokio::spawn(async move {
@@ -33,15 +34,14 @@ async fn main() {
         }
     });
 
-    /*
     // Start game handler
-    let (mut game_handler, game_handler_sender, game_handler_connector) = GameHandler::new("main".to_string());
+    let (mut game_handler, _game_handler_connector) = GameHandler::new(0, Some("GameHandler".to_string()));
+    let game_handler_link = game_handler.as_link(false);
     tokio::spawn(async move {
         loop {
             let _ = game_handler.handle().await;
         }
     });
-     */
 
     // Start listening to port 3000
     let listener: TcpListener = TcpListener::bind("127.0.0.1:3000").await.unwrap();
@@ -56,16 +56,13 @@ async fn main() {
         // Get another link for the global chat
         let global_chat_link = global_chat_link.clone();
 
-        // Get another sender for the game handler
-        /*
-        let game_handler_sender = game_handler_sender.clone();
-        let game_handler_connector = game_handler_connector.clone();
-         */
+        // Get another link for the game handler
+        let game_handler_link = game_handler_link.clone();
 
         tokio::spawn(async move {
             let (mut peer, peer_connector) = connexion.get_peer().await;
             peer_connector.send(global_chat_link).await.unwrap();
-            //peer.connect_to_game_handler(game_handler_sender, game_handler_connector).await;
+            peer_connector.send(game_handler_link).await.unwrap();
 
             loop {
                 _ = peer.handle().await;
