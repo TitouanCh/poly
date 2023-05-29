@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://2i55lw4cjidk"]
+
+[ext_resource type="PackedScene" uid="uid://tvfkcwqic2sp" path="res://scenes/ui/game.tscn" id="1_s685t"]
+
+[node name="lobby" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="title" type="Label" parent="."]
+layout_mode = 2
+text = "Tyrion Lake"
+
+[node name="player_list" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="player1" parent="player_list" instance=ExtResource("1_s685t")]
+layout_mode = 2
+
+[node name="player2" parent="player_list" instance=ExtResource("1_s685t")]
+layout_mode = 2
+
+[node name="button_bar" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 10
+alignment = 1
+
+[node name="launch" type="Button" parent="button_bar"]
+layout_mode = 2
+text = "launch"
+
+[node name="ready" type="Button" parent="button_bar"]
+layout_mode = 2
+text = "ready"
+
+[node name="cancel" type="Button" parent="button_bar"]
+layout_mode = 2
+text = "cancel"

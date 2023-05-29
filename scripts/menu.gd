@@ -17,6 +17,9 @@ extends Node2D
 # Game browser
 @onready var game_browser = $multiplayer/hbox/browser
 
+# Lobby
+@onready var lobby = $multiplayer/hbox/lobby
+
 @export var dimensions : Vector2 = Vector2(800, 800)
 
 var game_creator_scene = preload("res://scenes/ui/create_game.tscn")
@@ -28,6 +31,7 @@ func _ready():
 	if Multiplayer:
 		connect_button.pressed.connect(_connect)
 		Multiplayer.connect("received_global_chat_message", received_global_message)
+		Multiplayer.connect("received_joined_game", open_lobby)
 	
 	if game_browser:
 		game_browser.create_game_button_pressed.connect(open_game_creator)
@@ -53,6 +57,10 @@ func _process(delta):
 				Multiplayer._send_global_chat_message(msg)
 				global_chat_input.text = ""
 				global_chat_input.release_focus()
+		
+		# Game creator --
+		elif phase == "creator":
+			game_creator._on_confirm_pressed()
 	
 	center()
 
@@ -85,5 +93,14 @@ func open_game_creator():
 		game_creator = game_creator_scene.instantiate()
 		add_child(game_creator)
 		game_creator.create_game.connect(game_browser.create_game_received)
-		game_creator.create_game.connect(func(_a, _b): game_creator.queue_free(); game_creator = null)
-		game_creator.cancel.connect(func(): game_creator.queue_free(); game_creator = null)
+		game_creator.create_game.connect(func(_a, _b): game_creator.queue_free(); game_creator = null; phase = "browser")
+		game_creator.cancel.connect(func(): game_creator.queue_free(); game_creator = null; phase = "browser")
+		phase = "creator"
+
+func open_lobby():
+	phase = "lobby"
+	login.visible = false
+	global_chat.visible = true
+	game_browser.visible = false
+	
+	lobby.visible = true

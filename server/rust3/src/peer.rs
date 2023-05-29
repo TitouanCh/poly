@@ -70,6 +70,20 @@ impl Linkable for Peer {
         }
     }
 
+    async fn add_linked(&mut self, link: Link) {
+        let self_link = self.as_link(true);
+        self.mut_connected().insert(link.info.clone(), link.message_sendback.clone());
+        
+        if !link.dont_respond {
+            link.connexion_sendback.send(self_link).await.unwrap();
+        }
+
+        if link.info.what == "game" {
+            info!("{}: Received game link, joining", self.info().to_string());
+            self.join_game(link).await;
+        }
+    }
+
     async fn handle_message(&mut self, message: Message) {
         let mut bytes = message.as_bytes();
         let mut end : Vec<u8> = vec![124, 101, 110, 100, 124]; //|end|
@@ -123,5 +137,13 @@ impl Peer {
             Some(t) => {Some(t.clone())}
             None => {None}
         }
+    }
+
+    async fn join_game(&mut self, link: Link) {
+        // Send joining game to socket | j
+        self.handle_message(Message { info: link.info.clone(), bytes: vec![106] }).await;
+        
+        // Send to the game that we are joining
+        link.message_sendback.send(Message { info: self.info(), bytes: vec![106, 111, 105] }).await.unwrap();
     }
 }

@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bbxvm4i4qjtrj"]
+[gd_scene load_steps=4 format=3 uid="uid://bbxvm4i4qjtrj"]
 
 [ext_resource type="Script" path="res://scripts/menu.gd" id="1_xgvna"]
 [ext_resource type="PackedScene" uid="uid://cxk76kplc5yk7" path="res://scenes/ui/browser.tscn" id="2_g0gds"]
+[ext_resource type="PackedScene" uid="uid://2i55lw4cjidk" path="res://scenes/ui/lobby.tscn" id="3_ccs2s"]
 
 [node name="menu" type="Node2D"]
 script = ExtResource("1_xgvna")
@@ -31,6 +32,11 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="browser" parent="multiplayer/hbox" instance=ExtResource("2_g0gds")]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="lobby" parent="multiplayer/hbox" instance=ExtResource("3_ccs2s")]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3

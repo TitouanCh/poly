@@ -72,12 +72,13 @@ impl Linkable for GameHandler {
 
         //c: user requests to create a game
         if message.bytes[0] == 99 {
+            let game_id = self.number_of_games;
             // First 24 bytes are game title
             let game_title = String::from_utf8(message.bytes[1..25].to_vec()).unwrap();
             // 25th byte is the max number of players
             let maximum_players = message.bytes[25];
 
-            let (mut game, _game_sender) = Game::new(self.number_of_games, Some(game_title), maximum_players.into());
+            let (mut game, _game_sender) = Game::new(game_id, Some(game_title), maximum_players.into());
             // Save a link to the game
             self.game_links.insert(game.info(), game.as_link(false));
             
@@ -85,7 +86,7 @@ impl Linkable for GameHandler {
 
             self.number_of_games += 1;
 
-            // Add the creator to the game
+            // Send game link to the creator to the game
             self.connected_link_senders.get(&message.info).unwrap().send(game.as_link(false)).await.unwrap();
 
             // Start up the game ---

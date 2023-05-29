@@ -2,7 +2,7 @@ extends Node
 
 const HOST: String = "127.0.0.1"
 const PORT: int = 3000
-const RECONNECT_TIMEOUT: float = 3.0
+const RECONNECT_TIMEOUT: float = 1.0
 
 var USERNAME: String = ""
 
@@ -13,6 +13,8 @@ signal received_chat_message(content : String)
 signal received_global_chat_message(content : String, username : String)
 signal received_start_game
 signal received_city(city_data : Array)
+signal received_joined_game
+signal received_lobby_state(lobby_state : Array)
 
 func _ready() -> void:
 	_client.connected.connect(_handle_client_connected)
@@ -36,12 +38,22 @@ func _handle_client_connected() -> void:
 
 func _handle_client_data(data) -> void:
 	var messages = decode_bytes(data)
+	print(messages)
 	
 	for message in messages:
 		# Global chat message
 		if message["content"][0] == "g":
-			received_global_chat_message.emit(message["content"][1].get_string_from_utf8().trim_prefix("g"), message["user"][1])
-	
+			received_global_chat_message.emit(message["content"][1].get_string_from_utf8(), message["user"][1])
+		
+		# Join game
+		if message["content"][0] == "j":
+			print("Joining game")
+			received_joined_game.emit()
+		
+		# Lobby state
+		if message["content"][0] == "l":
+			received_lobby_state.emit(message["content"][1])
+		
 #	var data_str = data.get_string_from_utf8()
 #	print("Received data: ", data_str, " or ", data)
 #
@@ -86,8 +98,6 @@ func decode_bytes(bytes : Array) -> Array:
 	
 	for message_bytes in messages_bytes:
 		var fragmented = _seperate_byte_array(message_bytes, [124, 117, 115, 101, 114, 124])
-		
-		print(fragmented)
 		
 		if len(fragmented) != 2:
 			print("Error decoding message: " + str(message_bytes))

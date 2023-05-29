@@ -13,4 +13,8 @@ impl Message {
         bytes.append(&mut self.bytes.clone());
         bytes
     }
+
+    pub fn info(&self) -> UserInfo {
+        self.info.clone()
+    }
 }
