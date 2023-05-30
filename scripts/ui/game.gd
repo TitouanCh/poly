@@ -21,3 +21,11 @@ func _setup(n: int, t: String, number_of_players: int, max_number_of_players: in
 
 func join_game_clicked():
 	join.emit(id)
+
+func _setup_as_player(ready: bool, connected: bool, user_in_game_id: int, spectator: bool, username: String):
+	title_node.text = username
+	
+	join_button.disabled = true
+	join_button.text = "spectator" if spectator else "ready" if ready else "not ready"
+	
+	description_node.text = "[color=green](id: " + str(user_in_game_id) + ")[/color]" if connected else "[color=grey](id: " + str(user_in_game_id) + ")[/color]"

@@ -52,7 +52,7 @@ func _handle_client_data(data) -> void:
 		
 		# Lobby state
 		if message["content"][0] == "l":
-			received_lobby_state.emit(message["content"][1])
+			received_lobby_state.emit(message["content"][1], message["user"][1])
 		
 #	var data_str = data.get_string_from_utf8()
 #	print("Received data: ", data_str, " or ", data)

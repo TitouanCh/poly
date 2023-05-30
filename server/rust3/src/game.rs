@@ -80,7 +80,7 @@ pub struct Game {
 
     username_ids: BiMap<u32, UserInfo>,
 
-    lobby_interval: time::Interval
+    update_interval: time::Interval
 }
 
 #[async_trait]
@@ -114,8 +114,8 @@ impl Linkable for Game {
                 self.add_linked(link).await;
             }
 
-            _ = self.lobby_interval.tick() => {
-                info!("{}: Tick tok on the clock", self.info().to_string());
+            _ = self.update_interval.tick() => {
+                self.send_player_states_to_all().await;
             }
         }
     }
@@ -162,9 +162,9 @@ impl Game {
         let entities = HashMap::new();
         let username_ids = BiMap::new();
         
-        let lobby_interval = time::interval(time::Duration::from_secs(10));
+        let update_interval = time::interval(time::Duration::from_secs(1));
 
-        (Game {user, message_history, connected, connected_link_senders, player_states, game_state, entities, username_ids, lobby_interval}, link_sender)
+        (Game {user, message_history, connected, connected_link_senders, player_states, game_state, entities, username_ids, update_interval}, link_sender)
     }
 
     fn add_player(&mut self, user: UserInfo) {
@@ -208,7 +208,6 @@ impl Game {
     async fn send_player_states_to_all(&self) {
         info!("{}: sending back player states", self.info().to_string());
         for (_user, sender) in &self.connected {
-            info!("{}: test1", self.info().to_string());
             self.send_player_state(sender.clone()).await;
         }
     }
@@ -216,7 +215,6 @@ impl Game {
     // Send back state of the players
     async fn send_player_state(&self, tx: mpsc::Sender<Message>) { 
         for (from_user, player_state) in &self.player_states {
-            info!("{}: test2", self.info().to_string());
             let mut bytes = vec![108];
             bytes.extend(player_state.to_bytes());
             tx.send(Message { info: from_user.clone(), bytes }).await.unwrap();
