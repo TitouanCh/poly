@@ -65,12 +65,11 @@ async fn main() {
             peer_connector.send(game_handler_link).await.unwrap();
 
             loop {
-                _ = peer.handle().await;
-                /*
-                if !connected {
-                    break
+                let alive = peer.handle().await;
+                
+                if !alive {
+                    break;   
                 }
-                */
             }
 
             //info!("{} has disconnected", peer.username);

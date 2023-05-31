@@ -35,3 +35,4 @@ func create_player(ready, connected, user_in_game_id, spectator, username):
 func clear_players():
 	for player_node in player_nodes_list:
 		player_node.queue_free()
+	player_nodes_list = []

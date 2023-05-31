@@ -38,7 +38,7 @@ impl Linkable for Peer {
         self.message_history.push(message);
     }
 
-    async fn handle(&mut self) {
+    async fn handle(&mut self) -> bool {
         let mut buffer = [0u8; 1024];
         tokio::select! {
             received_message = self.user.message.receiver.recv() => {
@@ -46,18 +46,22 @@ impl Linkable for Peer {
                 let message = received_message.unwrap();
                 self.add_to_history(message.clone());
                 self.handle_message(message).await;
+                true
             }
 
             received_link = self.user.link.receiver.recv() => {
                 info!("{}: Received new link", self.info().to_string());
                 let link = received_link.unwrap(); 
                 self.add_linked(link).await;
+                true
             }
 
             received_socket = self.connexion.socket.read(&mut buffer) => {
                 let bytes_read = received_socket.unwrap();
                 if bytes_read == 0 {
-                    // Disconnected
+                    info!("{}: Has disconnected", self.info().to_string());
+                    self.unlink_from_all().await;
+                    return false
                 }
                 info!("{}: Received bytes", self.user.info.to_string());
                 let bytes_read = buffer[0..bytes_read].to_vec();
@@ -66,6 +70,7 @@ impl Linkable for Peer {
                     Err(_e) => info!("They sent: {:?}", bytes_read.clone())
                 }
                 self.interpret_bytes(bytes_read).await;
+                true
             }
         }
     }

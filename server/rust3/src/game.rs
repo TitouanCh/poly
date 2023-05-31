@@ -1,17 +1,17 @@
 use async_trait::async_trait;
 use tokio::{sync::mpsc, time};
-use std::collections::HashMap;
+use std::{collections::HashMap};
 use bimap::BiMap;
 use log::info;
 
-use crate::link::{
+use crate::{link::{
     userinfo::UserInfo,
     user::User,
     link::Link,
     linkable::Linkable,
     message::Message,
     satellite::Satellite
-};
+}, utilities::as_u32};
 
 pub struct Entity {
     position: Vec<u32>,
@@ -62,7 +62,19 @@ impl GameState {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        String::into_bytes(self.to_string())
+        let mut bytes = Vec::new();
+        for b in [self.phase, self.number_of_cities, self.maximum_players, self.number_of_players] {
+            bytes.extend(&b.to_le_bytes());
+        }
+        bytes
+    }
+
+    pub fn from_bytes(bytes: Vec<u8>) -> Self {
+        let phase = as_u32(bytes[0..4].to_vec());
+        let number_of_cities = as_u32(bytes[4..8].to_vec());
+        let maximum_players = as_u32(bytes[8..12].to_vec());
+        let number_of_players = as_u32(bytes[12..16].to_vec());
+        GameState { phase, number_of_cities, maximum_players, number_of_players }
     }
 }
 
@@ -72,6 +84,7 @@ pub struct Game {
 
     connected: HashMap<UserInfo, mpsc::Sender<Message>>,
     connected_link_senders: HashMap<UserInfo, mpsc::Sender<Link>>,
+    game_handler_info: Option<UserInfo>,
 
     player_states: HashMap<UserInfo, PlayerState>,
 
@@ -98,24 +111,36 @@ impl Linkable for Game {
         self.message_history.push(message);
     }
 
-    async fn handle(&mut self) {
-        
+    async fn handle(&mut self) -> bool {
         tokio::select! {
             received_message = self.user.message.receiver.recv() => {
                 info!("{}: Received message", self.info().to_string());
                 let message = received_message.unwrap();
                 self.add_to_history(message.clone());
+
+                 // Disconnected
+                 if message.bytes[0] == 60 {
+                    self.unlink(message.info);
+                    return  true;
+                }
+
+                // Received message
                 self.handle_message(message).await;
+                
+                true
             }
 
             received_link = self.user.link.receiver.recv() => {
                 let link = received_link.unwrap(); 
                 info!("{}: Received new link: {}", self.info().to_string(), link.info.to_string());
                 self.add_linked(link).await;
+                true
             }
 
             _ = self.update_interval.tick() => {
                 self.send_player_states_to_all().await;
+                self.send_info_to_gh().await;
+                true
             }
         }
     }
@@ -126,18 +151,25 @@ impl Linkable for Game {
         // Save player links (for some reason)
         self.connected_link_senders.insert(link.info.clone(), link.connexion_sendback.clone());
 
-        self.connected.insert(link.info, link.message_sendback);
+        self.connected.insert(link.info.clone(), link.message_sendback);
         
         if !link.dont_respond {
             link.connexion_sendback.send(self_link).await.unwrap();
         }
+
+        // Save game_handle info
+        if link.info.what == "game_handler" {
+            self.game_handler_info = Some(link.info);
+        }
     }
 
     async fn handle_message(&mut self, message: Message) {
-        if message.bytes[0..3] == vec![106, 111, 105] {
-            info!("{}: {} is joining", self.info().to_string(), message.info().to_string());
-            // Try to add the player
-            self.add_player(message.info());
+        if message.info.what == "peer" {
+            if message.bytes[0..3] == vec![106, 111, 105] {
+                info!("{}: {} is joining", self.info().to_string(), message.info().to_string());
+                // Try to add the player
+                self.add_player(message.info());
+            }
         }
     }
 }
@@ -164,7 +196,7 @@ impl Game {
         
         let update_interval = time::interval(time::Duration::from_secs(1));
 
-        (Game {user, message_history, connected, connected_link_senders, player_states, game_state, entities, username_ids, update_interval}, link_sender)
+        (Game {user, message_history, connected, connected_link_senders, game_handler_info: None, player_states, game_state, entities, username_ids, update_interval}, link_sender)
     }
 
     fn add_player(&mut self, user: UserInfo) {
@@ -220,5 +252,19 @@ impl Game {
             tx.send(Message { info: from_user.clone(), bytes }).await.unwrap();
         }
     }
+
+    async fn send_info_to_gh(&mut self) {
+        match &self.game_handler_info {
+            Some(info) => {
+                let mut bytes = vec![105];
+                bytes.extend(self.game_state.to_bytes());
+                self.connected.get(&info).unwrap().send(Message { info: self.info(), bytes }).await.unwrap();
+            }
+            None => {
+                info!("{}: Not connected to game handler", self.info().to_string());
+            }
+        }
+    }
+
 }
 

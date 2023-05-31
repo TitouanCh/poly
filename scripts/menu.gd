@@ -27,6 +27,7 @@ var game_creator = null
 
 var phase = "login"
 
+
 func _ready():
 	if Multiplayer:
 		connect_button.pressed.connect(_connect)

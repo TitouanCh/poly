@@ -184,3 +184,4 @@ func _send_create_game(game_name: String, max_players: int):
 	message.append(max_players)
 	
 	_client.send(message)
+
