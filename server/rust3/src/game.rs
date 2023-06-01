@@ -57,6 +57,7 @@ impl GameState {
         let mut a = "".to_string();
         for b in [self.phase, self.number_of_cities, self.maximum_players, self.number_of_players] {
             a += &b.to_string();
+            a += " ";
         }
         a
     }
@@ -249,7 +250,7 @@ impl Game {
         for (from_user, player_state) in &self.player_states {
             let mut bytes = vec![108];
             bytes.extend(player_state.to_bytes());
-            tx.send(Message { info: from_user.clone(), bytes }).await.unwrap();
+            let _ = tx.send(Message { info: from_user.clone(), bytes }).await;
         }
     }
 

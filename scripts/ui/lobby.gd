@@ -3,7 +3,7 @@ extends VBoxContainer
 @onready var player_list_node = $player_list
 
 var player_scene = preload("res://scenes/ui/game.tscn")
-var player_nodes_list = []
+var player_nodes_hash = {}
 
 func _ready():
 	if Multiplayer:
@@ -21,18 +21,23 @@ func set_player(info_bytes, user_string):
 	var user_in_game_id = info_bytes.decode_u32(2)
 	var spectator = info_bytes[6]
 	
-	if user_in_game_id == 0:
-		clear_players()
+	clear_player(user_in_game_id)
 	
 	create_player(ready, connected, user_in_game_id, spectator, user_string)
 
 func create_player(ready, connected, user_in_game_id, spectator, username):
 	var a = player_scene.instantiate()
 	player_list_node.add_child(a)
-	player_nodes_list.append(a)
+	player_nodes_hash[user_in_game_id] = a
 	a._setup_as_player(ready, connected, user_in_game_id, spectator, username)
 
 func clear_players():
-	for player_node in player_nodes_list:
+	for player_node in player_nodes_hash:
 		player_node.queue_free()
-	player_nodes_list = []
+	player_nodes_hash = []
+
+func clear_player(id):
+	var old = player_nodes_hash.get(id)
+	if old:
+		old.queue_free()
+		player_nodes_hash.erase(id)

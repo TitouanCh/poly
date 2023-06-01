@@ -9,12 +9,13 @@ var USERNAME: String = ""
 const Client = preload("res://scripts/client.gd")
 var _client = Client.new()
 
-signal received_chat_message(content : String)
-signal received_global_chat_message(content : String, username : String)
+signal received_chat_message(content: String)
+signal received_global_chat_message(content: String, username: String)
 signal received_start_game
-signal received_city(city_data : Array)
+signal received_city(city_data: Array)
 signal received_joined_game
-signal received_lobby_state(lobby_state : Array)
+signal received_lobby_state(lobby_state: Array)
+signal received_browser_state(browser_state: Array)
 
 func _ready() -> void:
 	_client.connected.connect(_handle_client_connected)
@@ -53,6 +54,10 @@ func _handle_client_data(data) -> void:
 		# Lobby state
 		if message["content"][0] == "l":
 			received_lobby_state.emit(message["content"][1], message["user"][1])
+		
+		# Game handler info
+		if message["content"][0] == "i":
+			received_browser_state.emit(message["content"][1])
 		
 #	var data_str = data.get_string_from_utf8()
 #	print("Received data: ", data_str, " or ", data)
@@ -185,3 +190,9 @@ func _send_create_game(game_name: String, max_players: int):
 	
 	_client.send(message)
 
+func _send_join_game(game_id: int):
+	var message = PackedByteArray("ghj".to_utf8_buffer())
+	message += PackedByteArray([0, 0, 0, 0])
+	message.encode_u32(3, game_id)
+	
+	_client.send(message)

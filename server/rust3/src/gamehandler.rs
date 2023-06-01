@@ -104,8 +104,26 @@ impl Linkable for GameHandler {
             if message.bytes[0] == 106 {
                 // first 4 bytes are game id
                 let game_id = as_u32(message.bytes[1..5].to_vec());
+                info!("{}: {} requests to join game with id: {}", self.user.info.to_string(), message.info.to_string(), game_id.to_string());
 
-                //self.game_connection_receivers.get(&game_id).unwrap().send(UserSender { user: command.user.clone(), sender: self.connected.get(&command.user).unwrap().clone() }).await.unwrap();
+                // Search for the game with the id
+                let mut game_link = None;
+                for (info, link) in &self.game_links {
+                    if info.what == "game" && info.id == game_id {
+                        game_link = Some(link.clone());
+                    }
+                }
+
+                match game_link {
+                    Some(link) => {
+                        info!("{}: game found!", self.info().to_string());
+                        // Send link to the user
+                        self.connected_link_senders.get(&message.info).unwrap().send(link).await.unwrap();
+                    }
+                    None => {
+                        info!("{}: game wasn't found :(", self.info().to_string());
+                    }
+                }
             }
 
             //c: user requests to create a game
@@ -143,7 +161,7 @@ impl Linkable for GameHandler {
             //i: gamestate info
             if message.bytes[0] == 105 {
                 info!("{}: received game info from {}", self.user.info.to_string(), message.info.to_string());
-                self.game_info.insert(message.info(), GameState::from_bytes(message.bytes));
+                self.game_info.insert(message.info(), GameState::from_bytes(message.bytes[1..].to_vec()));
             }
         }
     }
@@ -163,7 +181,7 @@ impl GameHandler {
 
     fn game_info_as_bytes(&self, n: u32) -> Vec<u8> {
         let mut counter = 0;
-        let mut bytes = Vec::new();
+        let mut bytes = vec![105];
         for (info, game_info) in &self.game_info {
             bytes.extend(info.as_bytes());
             bytes.extend(&game_info.to_bytes());
@@ -179,7 +197,7 @@ impl GameHandler {
         info!("{}: sending back game info", self.info().to_string());
         let bytes = self.game_info_as_bytes(20);
         for (_user, sender) in &self.connected {
-            sender.send(Message {info: self.info(), bytes: bytes.clone() }).await.unwrap();
+            let _ = sender.send(Message {info: self.info(), bytes: bytes.clone() }).await;
         }
     }
 }
