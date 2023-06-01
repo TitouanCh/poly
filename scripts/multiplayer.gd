@@ -196,3 +196,11 @@ func _send_join_game(game_id: int):
 	message.encode_u32(3, game_id)
 	
 	_client.send(message)
+
+func _send_ready():
+	var message = PackedByteArray("rea".to_utf8_buffer())
+	_client.send(message)
+
+func _send_launch():
+	var message = PackedByteArray("lau".to_utf8_buffer())
+	_client.send(message)

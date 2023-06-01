@@ -20,7 +20,8 @@ pub struct Peer {
     message_history: Vec<Message>,
     _ip: IpAddr,
     connexion: Connexion,
-    connected: HashMap<UserInfo, mpsc::Sender<Message>>
+    connected: HashMap<UserInfo, mpsc::Sender<Message>>,
+    active_game: Option<UserInfo>
 }
 
 #[async_trait]
@@ -106,7 +107,7 @@ impl Peer {
         let (user, link_sender) = User::new(0, username, "peer".to_string());
         let message_history = Vec::new();
         let connected = HashMap::new();
-        (Peer { connexion, user, _ip: remote_ip, connected, message_history}, link_sender)
+        (Peer { connexion, user, _ip: remote_ip, connected, message_history, active_game: None}, link_sender)
     }
 
     async fn interpret_bytes(&self, bytes: Vec<u8>) {
@@ -135,6 +136,37 @@ impl Peer {
                 None => { info!("{}: Is not linked to game handler", self.info().to_string()); }
             }
         }
+
+        // rea: ready active game
+        if bytes[0..3] == [114, 101, 97] {
+            match &self.active_game {
+                Some(info) => {
+                    match self.connected.get(&info) {
+                        Some(sender) => {
+                            let _ = sender.send(Message {info: self.info(), bytes: vec![114, 101, 97]}).await;
+                            info!("{}: Ready!", self.info().to_string())
+                        }
+                        None => { info!("{}: Tried to ready but no longer connected to active game", self.info().to_string()) }
+                    }
+                }
+                None => { info!("{}: Tried to ready but no active game", self.info().to_string()) }
+            }
+        }
+
+        // lau: try to launch active game
+        if bytes[0..3] == [108, 97, 117] {
+            match &self.active_game {
+                Some(info) => {
+                    match self.connected.get(&info) {
+                        Some(sender) => {
+                            let _ = sender.send(Message {info: self.info(), bytes: vec![108, 97, 117]}).await;
+                        }
+                        None => { info!("{}: Tried to ready but no longer connected to active game", self.info().to_string()) }
+                    }
+                }
+                None => { info!("{}: Tried to ready but no active game", self.info().to_string()) }
+            }
+        }
     }
 
     fn get_sender(&self, name: String, what: String) -> Option<mpsc::Sender<Message>> {
@@ -150,5 +182,8 @@ impl Peer {
         
         // Send to the game that we are joining
         link.message_sendback.send(Message { info: self.info(), bytes: vec![106, 111, 105] }).await.unwrap();
+
+        // Set game as active
+        self.active_game = Some(link.info);
     }
 }

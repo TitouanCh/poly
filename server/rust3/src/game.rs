@@ -6,7 +6,7 @@ use log::info;
 
 use crate::{link::{
     userinfo::UserInfo,
-    user::User,
+    user::{User, self},
     link::Link,
     linkable::Linkable,
     message::Message,
@@ -121,7 +121,17 @@ impl Linkable for Game {
 
                  // Disconnected
                  if message.bytes[0] == 60 {
-                    self.unlink(message.info);
+                    self.unlink(message.info());
+
+                    // Set player state to disconnected if ingame
+                    if message.info().what == "peer" {
+                        let player_state = self.player_states.get_mut(&message.info());
+                        match player_state {
+                            Some(state) => { state.connected = false; }
+                            None => {} 
+                        }
+                    }
+
                     return  true;
                 }
 
@@ -166,10 +176,34 @@ impl Linkable for Game {
 
     async fn handle_message(&mut self, message: Message) {
         if message.info.what == "peer" {
+            // joi: join game
             if message.bytes[0..3] == vec![106, 111, 105] {
                 info!("{}: {} is joining", self.info().to_string(), message.info().to_string());
                 // Try to add the player
                 self.add_player(message.info());
+            }
+
+            // rea: ready
+            if message.bytes[0..3] == [114, 101, 97] {
+                let mut player_state = self.player_states.get_mut(&message.info).unwrap();
+                player_state.ready = !player_state.ready;
+                info!("{}: {} ready: {}", self.user.info.to_string(), message.info().to_string(), player_state.ready.to_string());
+            }
+
+            // lau: try to launch
+            if message.bytes[0..3] == [108, 97, 117] {
+                let mut all_ready = true;
+                for (_info, player_state) in &self.player_states {
+                    if player_state.ready == false && player_state.spectator == false {
+                        all_ready = false;    
+                        break;
+                    }
+                }
+                if all_ready {
+                    self.launch().await;
+                } else {
+                    info!("{}: tried to launch but not enought players are ready", self.info().to_string());
+                }
             }
         }
     }
@@ -205,8 +239,8 @@ impl Game {
         match self.username_ids.get_by_right(&user) {
             // If he never was in the game
             None => {
-                // Check if there are any spots left for the player
-                if self.game_state.number_of_players < self.game_state.maximum_players {
+                // Check if there are any spots left for the player and the game hasn't started
+                if self.game_state.number_of_players < self.game_state.maximum_players && self.game_state.phase == 0 {
                     let new_user_id = self.game_state.number_of_players;
                     
                     self.username_ids.insert(new_user_id, user.clone());
@@ -263,6 +297,16 @@ impl Game {
             }
             None => {
                 info!("{}: Not connected to game handler", self.info().to_string());
+            }
+        }
+    }
+
+    async fn launch(&mut self) {
+        info!("{}: launching!!", self.info().to_string());
+        self.game_state.phase = 1;
+        for (user, tx) in &self.connected {
+            if user.what == "peer" {
+                let _ = tx.send(Message { info: self.info(), bytes: vec![115] }).await;
             }
         }
     }
