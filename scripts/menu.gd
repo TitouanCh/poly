@@ -33,6 +33,7 @@ func _ready():
 		connect_button.pressed.connect(_connect)
 		Multiplayer.connect("received_global_chat_message", received_global_message)
 		Multiplayer.connect("received_joined_game", open_lobby)
+		Multiplayer.connect("received_start_game", close_menu)
 	
 	if game_browser:
 		game_browser.create_game_button_pressed.connect(open_game_creator)
@@ -105,3 +106,6 @@ func open_lobby():
 	game_browser.visible = false
 	
 	lobby.visible = true
+
+func close_menu():
+	visible = false

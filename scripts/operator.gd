@@ -4,7 +4,7 @@ class_name Operator
 
 enum phase {STANDBY, PLACEMENT, INGAME}
 
-var current_phase = phase.STANDBY
+var current_phase = phase.PLACEMENT
 
 # For now, only one selection at the time
 var selected_node : Prop = null
@@ -38,6 +38,7 @@ func _process_standby(delta):
 func _process_placement(delta):
 	if Input.is_action_just_pressed("left_click"):
 		Multiplayer._send_placed_city(vec3_to_vec2i(renderer.get_unprojected_mouse_position()))
+		renderer.set_city(1, "Test", vec3_to_vec2i(renderer.get_unprojected_mouse_position()), true)
 
 func _process_ingame(delta):
 	if Input.is_action_just_pressed("right_click"):

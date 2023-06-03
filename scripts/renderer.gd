@@ -13,6 +13,8 @@ func _ready():
 	
 	if Multiplayer:
 		Multiplayer.connect("received_city", set_city)
+	
+	set_city(1, "Goeogie", Vector2(1050, 1050), true)
 
 func get_unprojected_mouse_position() -> Vector3:
 	var vec = player.camera.project_ray_normal(get_viewport().get_mouse_position())
@@ -30,12 +32,7 @@ func spawn_city():
 	cities.append(city)
 	city.set_unactive()
 
-func set_city(city_data : PackedStringArray):
-	# Decode
-	var id = int(city_data[0])
-	var coord = Vector2(float(city_data[1]), float(city_data[2]))
-	
-	# Setup
+func set_city(id, city_name, city_position, just_created = false):
 	if (id < cities_pool_number):
 		cities[id].set_active()
-		cities[id].set_coord(coord)
+		cities[id].set_param(id, city_name, city_position, just_created)

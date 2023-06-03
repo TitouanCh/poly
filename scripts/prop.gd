@@ -11,6 +11,7 @@ var is_selected : bool = false
 
 @export var clickable : bool = true
 @export var clickable_distance : float = 10.0
+@export var on_floor : bool = true
 
 @onready var heightmap : Image = Image.load_from_file("res://test_heightmap2_blurred.png")
 @onready var verticality : float = 40.0
@@ -41,8 +42,8 @@ func _process(delta):
 				clicked.emit(self)
 	
 	# Height
-	if heightmap:
-		position.y = get_height(Vector2(position.x, position.z), heightmap) * verticality + 2.0
+	if heightmap and on_floor:
+		position.y = get_height_at_position()
 	
 	_update(delta)
 
@@ -56,6 +57,9 @@ func get_height(coord, heightmap : Image):
 	var dimensions = heightmap.get_size()
 	coord = coord + Vector2(300, 300)
 	return heightmap.get_pixel(coord.x, coord.y).r
+
+func get_height_at_position():
+	return get_height(Vector2(position.x, position.z), heightmap) * verticality + 2.0
 
 func set_active():
 	visible = true
