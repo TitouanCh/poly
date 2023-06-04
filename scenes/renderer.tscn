@@ -18,12 +18,28 @@ transform = Transform3D(0.819152, 0, 0.573576, 0, 1, 0, -0.573576, 0, 0.819152, 
 
 [node name="unit" parent="." instance=ExtResource("4_ovgiw")]
 transform = Transform3D(-0.545444, 0, 0.838147, 0, 1, 0, -0.838147, 0, -0.545444, 983.265, 21.7881, 1001.54)
+unit_name = null
+clickable = null
+clickable_distance = null
+on_floor = null
 
 [node name="unit2" parent="." instance=ExtResource("4_ovgiw")]
 transform = Transform3D(-0.545444, 0, 0.838147, 0, 1, 0, -0.838147, 0, -0.545444, 980.01, 21.7881, 1005.18)
+unit_name = null
+clickable = null
+clickable_distance = null
+on_floor = null
 
 [node name="unit3" parent="." instance=ExtResource("4_ovgiw")]
 transform = Transform3D(-0.545444, 0, 0.838147, 0, 1, 0, -0.838147, 0, -0.545444, 979.111, 21.7881, 1000.84)
+unit_name = null
+clickable = null
+clickable_distance = null
+on_floor = null
 
 [node name="unit4" parent="." instance=ExtResource("4_ovgiw")]
 transform = Transform3D(0.994454, 0, 0.105171, 0, 1, 0, -0.105171, 0, 0.994454, 1025.58, 17.6594, 1012.31)
+unit_name = null
+clickable = null
+clickable_distance = null
+on_floor = null

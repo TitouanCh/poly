@@ -5,6 +5,7 @@ class_name Prop
 var player : Player
 var camera : Camera3D
 var terrain : Terrain
+var renderer : Renderer
 var meshes : Array = []
 
 var is_selected : bool = false
@@ -24,6 +25,7 @@ func _ready():
 		player = get_parent().player
 		camera = get_parent().player.camera
 		terrain = get_parent().player.terrain
+		renderer = get_parent()
 	
 	# Connect to operator : temporary
 	if get_parent().get_parent():

@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://cxc3m730iykat"]
+[gd_scene load_steps=7 format=3 uid="uid://cxc3m730iykat"]
 
 [ext_resource type="ArrayMesh" uid="uid://olp6u8fktd3c" path="res://models/obj/sword_guy.obj" id="1_53vge"]
 [ext_resource type="Script" path="res://scripts/unit.gd" id="1_r88q7"]
@@ -8,10 +8,25 @@
 next_pass = ExtResource("2_tes46")
 albedo_color = Color(1, 0.509804, 0.576471, 1)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_solbf"]
+next_pass = ExtResource("2_tes46")
+albedo_color = Color(0.756863, 0.184314, 0.196078, 1)
+
+[sub_resource type="MultiMesh" id="MultiMesh_amrqr"]
+transform_format = 1
+instance_count = 9
+mesh = ExtResource("1_53vge")
+buffer = PackedFloat32Array(0.29, 1, 0, 0.0697674, 340, 3, 0.21, 0.24, 0.29, 1, 0, 0.0697674, 340, 3, 0.21, 0.24, 0.29, 1, 0, 0.0697674, 481, 3, 0.21, 0.24, 0.29, 1, 1, 0.0697674, 481, 3, 0.21, 0.24, 0.29, 1, 1, 0.0697674, 481, 3, 0.21, 0.24, 0.29, 1, 1, 0.0697674, 481, 3, 0.21, 0.24, 0.29, 1, 1, 0.0697674, 481, 43, 0.21, 0.24, 0.29, 1, 1, 1, 481, 43, 0.21, 0.24, 0.29, 1, 1, 1, 481, 43, 0.21, 0.24, 0.29, 1, 1, 1, 481, 43, 0.21, 0.24, 0.29, 1, 1, 1, 340, 43, 0.21, 0.24, 0.29, 1, 0, 1, 340, 43, 0.21, 0.24, 0.29, 1, 0, 1, 340, 43, 0.21, 0.24, 0.29, 1, 0, 1)
+
 [node name="unit" type="Node3D"]
 script = ExtResource("1_r88q7")
+unit_name = null
+clickable = null
+clickable_distance = null
+on_floor = null
 
-[node name="mesh" type="MeshInstance3D" parent="."]
+[node name="mesh_old" type="MeshInstance3D" parent="."]
+visible = false
 material_override = SubResource("StandardMaterial3D_nv6d7")
 mesh = ExtResource("1_53vge")
 
@@ -25,3 +40,7 @@ theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 24
 text = "Swordmen"
 horizontal_alignment = 1
+
+[node name="mesh" type="MultiMeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_solbf")
+multimesh = SubResource("MultiMesh_amrqr")
