@@ -61,3 +61,11 @@ offset_top = 300.0
 offset_right = 200.0
 offset_bottom = 340.0
 mouse_filter = 2
+
+[node name="money_label" type="Label" parent="ui_elements"]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 30
+text = "Money: 6"

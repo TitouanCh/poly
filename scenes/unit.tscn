@@ -1,8 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://cxc3m730iykat"]
+[gd_scene load_steps=11 format=3 uid="uid://cxc3m730iykat"]
 
 [ext_resource type="ArrayMesh" uid="uid://olp6u8fktd3c" path="res://models/obj/sword_guy.obj" id="1_53vge"]
 [ext_resource type="Script" path="res://scripts/unit.gd" id="1_r88q7"]
 [ext_resource type="Material" uid="uid://b8m6gksxclyq0" path="res://models/materials/outline.material" id="2_tes46"]
+[ext_resource type="Script" path="res://scripts/ui/unit_indicators.gd" id="4_jme0p"]
+[ext_resource type="Texture2D" uid="uid://cho0nf1ovtbj" path="res://sprites/health.png" id="4_usgfu"]
+[ext_resource type="Texture2D" uid="uid://ctdytffi2ug1q" path="res://sprites/defense.png" id="5_w2t3k"]
+[ext_resource type="Texture2D" uid="uid://b74hyxcvkyxrv" path="res://sprites/attack.png" id="6_vnemt"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nv6d7"]
 next_pass = ExtResource("2_tes46")
@@ -13,6 +17,7 @@ next_pass = ExtResource("2_tes46")
 albedo_color = Color(0.756863, 0.184314, 0.196078, 1)
 
 [sub_resource type="MultiMesh" id="MultiMesh_amrqr"]
+resource_local_to_scene = true
 transform_format = 1
 instance_count = 9
 mesh = ExtResource("1_53vge")
@@ -20,10 +25,6 @@ buffer = PackedFloat32Array(0.29, 1, 0, 0.0697674, 340, 3, 0.21, 0.24, 0.29, 1, 
 
 [node name="unit" type="Node3D"]
 script = ExtResource("1_r88q7")
-unit_name = null
-clickable = null
-clickable_distance = null
-on_floor = null
 
 [node name="mesh_old" type="MeshInstance3D" parent="."]
 visible = false
@@ -40,6 +41,92 @@ theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 24
 text = "Swordmen"
 horizontal_alignment = 1
+
+[node name="indicators" type="Control" parent="ui_elements" node_paths=PackedStringArray("unit")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.5, 0.5)
+script = ExtResource("4_jme0p")
+unit = NodePath("../..")
+
+[node name="attack" type="Control" parent="ui_elements/indicators"]
+custom_minimum_size = Vector2(64, 64)
+anchors_preset = 0
+offset_top = -192.0
+offset_right = 40.0
+offset_bottom = -152.0
+
+[node name="sprite" type="TextureRect" parent="ui_elements/indicators/attack"]
+modulate = Color(1, 0.584314, 0.501961, 1)
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 64.0
+texture = ExtResource("6_vnemt")
+
+[node name="label" type="Label" parent="ui_elements/indicators/attack"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 40
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="defense" type="Control" parent="ui_elements/indicators"]
+custom_minimum_size = Vector2(64, 64)
+anchors_preset = 0
+offset_top = -128.0
+offset_right = 64.0
+offset_bottom = -64.0
+
+[node name="sprite" type="TextureRect" parent="ui_elements/indicators/defense"]
+modulate = Color(0.898039, 0.847059, 0.901961, 1)
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 64.0
+texture = ExtResource("5_w2t3k")
+
+[node name="label" type="Label" parent="ui_elements/indicators/defense"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 40
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="health" type="Control" parent="ui_elements/indicators"]
+custom_minimum_size = Vector2(64, 64)
+anchors_preset = 0
+offset_top = -64.0
+offset_right = 64.0
+
+[node name="sprite" type="TextureRect" parent="ui_elements/indicators/health"]
+modulate = Color(0.658824, 1, 0.615686, 1)
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 64.0
+texture = ExtResource("4_usgfu")
+
+[node name="label" type="Label" parent="ui_elements/indicators/health"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 40
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="mesh" type="MultiMeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_solbf")

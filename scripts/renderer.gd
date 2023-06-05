@@ -16,6 +16,10 @@ func _ready():
 	
 	set_city(1, "Goeogie", Vector2(1050, 1050), true)
 
+func _process(delta):
+	if Input.is_action_just_pressed("space"):
+		unit_attack($unit, $unit4)
+
 func get_unprojected_mouse_position() -> Vector3:
 	var vec = player.camera.project_ray_normal(get_viewport().get_mouse_position())
 	var alpha = -player.camera.position.y/vec.y
@@ -36,3 +40,12 @@ func set_city(id, city_name, city_position, just_created = false):
 	if (id < cities_pool_number):
 		cities[id].set_active()
 		cities[id].set_param(id, city_name, city_position, just_created)
+
+func unit_attack(attacker: Unit, defender: Unit):
+	if attacker and defender:
+		var direction = (attacker.position - defender.position).normalized()
+		var distance = defender.position.distance_to(attacker.position)
+		attacker.target = attacker.position - direction * (distance - 20)
+		attacker.target_rotation = direction.angle_to(Vector3.ONE)
+		defender.target_rotation = -direction.angle_to(Vector3.ONE)
+		defender.attacked_by(attacker)

@@ -52,6 +52,10 @@ func _process(delta):
 func _update(delta):
 	pass
 
+func _destroy_self():
+	if is_selected: unselect()
+	queue_free()
+
 func _to_string() -> String:
 	return "Prop | position: {0} | selected: {1}".format([position, is_selected])
 
@@ -85,3 +89,4 @@ func unselect():
 	for mesh in meshes:
 		mesh.set_instance_shader_parameter("color",  Color(0, 0, 0))
 		mesh.set_instance_shader_parameter("outline_thickness", 0.2)
+	terrain.selected_nodes.erase(self)
