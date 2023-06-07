@@ -14,11 +14,13 @@ func _ready():
 	if Multiplayer:
 		Multiplayer.connect("received_city", set_city)
 	
-	set_city(1, "Goeogie", Vector2(1050, 1050), true)
+#	set_city(1, "Goeogie", Vector2(1050, 1050), true)
 
 func _process(delta):
-	if Input.is_action_just_pressed("space"):
-		unit_attack($unit, $unit4)
+	# Test attack
+#	if Input.is_action_just_pressed("space"):
+#		unit_attack($unit, $unit4)
+	pass
 
 func get_unprojected_mouse_position() -> Vector3:
 	var vec = player.camera.project_ray_normal(get_viewport().get_mouse_position())

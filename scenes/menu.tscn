@@ -41,24 +41,54 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="global_chat" type="VBoxContainer" parent="multiplayer/hbox"]
+[node name="chat" type="VBoxContainer" parent="multiplayer/hbox"]
+visible = false
+layout_mode = 2
+
+[node name="global_chat" type="VBoxContainer" parent="multiplayer/hbox/chat"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 size_flags_stretch_ratio = 0.4
 
-[node name="title" type="Label" parent="multiplayer/hbox/global_chat"]
+[node name="title" type="Label" parent="multiplayer/hbox/chat/global_chat"]
 layout_mode = 2
 text = "Global Chat"
 
-[node name="chat" type="RichTextLabel" parent="multiplayer/hbox/global_chat"]
+[node name="chat" type="RichTextLabel" parent="multiplayer/hbox/chat/global_chat"]
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
 text = "[color=grey]~Welcome to the global chat[/color]"
 scroll_following = true
 
-[node name="input" type="TextEdit" parent="multiplayer/hbox/global_chat"]
+[node name="input" type="TextEdit" parent="multiplayer/hbox/chat/global_chat"]
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+placeholder_text = "chat here"
+
+[node name="game_chat" type="VBoxContainer" parent="multiplayer/hbox/chat"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.4
+
+[node name="title" type="Label" parent="multiplayer/hbox/chat/game_chat"]
+layout_mode = 2
+text = "Game Chat"
+
+[node name="chat" type="RichTextLabel" parent="multiplayer/hbox/chat/game_chat"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "[color=grey]~Welcome to the game chat[/color]"
+scroll_following = true
+
+[node name="input" type="TextEdit" parent="multiplayer/hbox/chat/game_chat"]
 custom_minimum_size = Vector2(200, 40)
 layout_mode = 2
 size_flags_horizontal = 4

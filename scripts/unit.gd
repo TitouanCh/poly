@@ -28,7 +28,7 @@ func _update(delta):
 		name_label.position = camera.unproject_position(self.position) - name_label.size/2 + Vector2(0, 32)
 		unit_indicators.position = camera.unproject_position(self.position) + Vector2(32, 0)
 	
-	# Test movement
+	# Movement
 	if target != Vector3.ZERO:
 		var direction = target - position
 		position.x += direction.x * delta * speed
@@ -37,8 +37,9 @@ func _update(delta):
 	if target_rotation != rotation.y:
 		rotation.y = lerp_angle(rotation.y, target_rotation, delta * speed)
 	
-	if is_selected and Input.is_action_just_released("right_click"):
-		target = renderer.get_unprojected_mouse_position()
+	# Test movement
+#	if is_selected and Input.is_action_just_released("right_click"):
+#		target = renderer.get_unprojected_mouse_position()
 	
 	# Multimesh
 	for i in range(multimesh.multimesh.instance_count):

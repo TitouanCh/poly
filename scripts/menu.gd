@@ -8,11 +8,20 @@ extends Node2D
 @onready var connect_button = $multiplayer/hbox/login/connect_button
 @onready var username_input = $multiplayer/hbox/login/username_input
 
+# Chat
+@onready var chat = $multiplayer/hbox/chat
+
 # Global chat
-@onready var global_chat = $multiplayer/hbox/global_chat
-@onready var global_chat_title = $multiplayer/hbox/global_chat/title
-@onready var global_chat_text = $multiplayer/hbox/global_chat/chat
-@onready var global_chat_input = $multiplayer/hbox/global_chat/input
+@onready var global_chat = $multiplayer/hbox/chat/global_chat
+@onready var global_chat_title = $multiplayer/hbox/chat/global_chat/title
+@onready var global_chat_text = $multiplayer/hbox/chat/global_chat/chat
+@onready var global_chat_input = $multiplayer/hbox/chat/global_chat/input
+
+# Game chat
+@onready var game_chat = $multiplayer/hbox/chat/game_chat
+@onready var game_chat_title = $multiplayer/hbox/chat/game_chat/title
+@onready var game_chat_text = $multiplayer/hbox/chat/game_chat/chat
+@onready var game_chat_input = $multiplayer/hbox/chat/game_chat/input
 
 # Game browser
 @onready var game_browser = $multiplayer/hbox/browser
@@ -64,6 +73,13 @@ func _process(delta):
 		elif phase == "creator":
 			game_creator._on_confirm_pressed()
 	
+	# Chat
+	var any_visible = false
+	for children in chat.get_children():
+		if children.visible:
+			any_visible = true
+	chat.visible = any_visible
+	
 	center()
 
 func _connect():
@@ -104,6 +120,7 @@ func open_lobby():
 	login.visible = false
 	global_chat.visible = true
 	game_browser.visible = false
+	game_chat.visible = true
 	
 	lobby.visible = true
 

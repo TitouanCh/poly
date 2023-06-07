@@ -4,7 +4,7 @@ class_name Operator
 
 enum phase {STANDBY, PLACEMENT, INGAME}
 
-var current_phase = phase.PLACEMENT
+var current_phase = phase.STANDBY
 
 # For now, only one selection at the time
 var selected_node : Prop = null
