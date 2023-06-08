@@ -160,11 +160,12 @@ impl Peer {
                     match self.connected.get(&info) {
                         Some(sender) => {
                             let _ = sender.send(Message {info: self.info(), bytes: vec![108, 97, 117]}).await;
+                            info!("{}: Launching!", self.info().to_string())
                         }
-                        None => { info!("{}: Tried to ready but no longer connected to active game", self.info().to_string()) }
+                        None => { info!("{}: Tried to launch but no longer connected to active game", self.info().to_string()) }
                     }
                 }
-                None => { info!("{}: Tried to ready but no active game", self.info().to_string()) }
+                None => { info!("{}: Tried to launch but no active game", self.info().to_string()) }
             }
         }
     }
