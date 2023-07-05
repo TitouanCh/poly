@@ -35,7 +35,7 @@ func bytes_to_games(array: PackedByteArray):
 		var number_of_players = array.decode_u32(i + 40) 
 		i += 44
 		print(game_id, ' ', len(game_name), ' ', game_phase, ' ', number_of_cities, ' ', number_of_players, ' ', maximum_number_of_players)
-		games.append([game_id, game_name, number_of_players, maximum_number_of_players])
+		games.append([game_id, game_name, number_of_players, maximum_number_of_players, game_phase])
 	
 	receive_games(games)
 
@@ -46,7 +46,7 @@ func receive_games(list_of_games):
 		var a = game_scene.instantiate()
 		game_list_node.add_child(a)
 		game_list.append(a)
-		a._setup(game[0], game[1], game[2], game[3])
+		a._setup(game[0], game[1], game[2], game[3], game[4])
 		a.join.connect(join_game_clicked)
 
 func clear_games():

@@ -47,6 +47,9 @@ func _ready():
 	if game_browser:
 		game_browser.create_game_button_pressed.connect(open_game_creator)
 	
+	if lobby:
+		lobby.exit.connect(close_lobby)
+	
 	resize()
 	center()
 
@@ -123,6 +126,16 @@ func open_lobby():
 	game_chat.visible = true
 	
 	lobby.visible = true
+
+func close_lobby():
+	phase = "browser"
+	
+	login.visible = false
+	global_chat.visible = true
+	game_browser.visible = true
+	game_chat.visible = false
+	
+	lobby.visible = false
 
 func close_menu():
 	visible = false

@@ -8,11 +8,14 @@ extends VBoxContainer
 var player_scene = preload("res://scenes/ui/game.tscn")
 var player_nodes_hash = {}
 
+signal exit
+
 func _ready():
 	if Multiplayer:
 		ready_button.pressed.connect(Multiplayer._send_ready)
 		launch_button.pressed.connect(Multiplayer._send_launch)
 		cancel_button.pressed.connect(Multiplayer._send_leave)
+		cancel_button.pressed.connect(func(): exit.emit())
 		Multiplayer.received_lobby_state.connect(set_player)
 
 func set_player(info_bytes, user_string):
