@@ -168,6 +168,22 @@ impl Peer {
                 None => { info!("{}: Tried to launch but no active game", self.info().to_string()) }
             }
         }
+
+        // lea: try to leave active game
+        if bytes[0..3] == [108, 101, 97] {
+            match  &self.active_game {
+                Some(info) => {
+                    match self.connected.get(&info) {
+                        Some(sender) => {
+                            let _ = sender.send(Message { info: self.info(), bytes: vec![108, 101, 97] }).await;
+                            info!("{}: Leaving {}", self.info().to_string(), info.to_string());
+                        }
+                        None => { info!("{}: Tried to leave but no longer connected to active game", self.info().to_string()) }
+                    }
+                }
+                None => { info!("{}: Tried to leave but no active game", self.info().to_string()) }
+            }
+        }
     }
 
     fn get_sender(&self, name: String, what: String) -> Option<mpsc::Sender<Message>> {

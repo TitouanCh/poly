@@ -131,7 +131,6 @@ impl Linkable for Game {
                             None => {} 
                         }
                     }
-
                     return  true;
                 }
 
@@ -205,6 +204,11 @@ impl Linkable for Game {
                     info!("{}: tried to launch but not enought players are ready", self.info().to_string());
                 }
             }
+
+            // lea: try to leave
+            if message.bytes[0..3] == [108, 101, 97] {
+                self.remove_player(message.info());
+            }
         }
     }
 }
@@ -258,6 +262,27 @@ impl Game {
                 info!("{}: {} rejoined", self.info().to_string(), user.to_string());
             }
         };
+    }
+
+    fn remove_player(&mut self, user: UserInfo) {
+        // This can only occur if the game hasn't already started ie: phase 0
+        if self.game_state.phase == 0 {
+            // Check if the user is in the game
+            match self.username_ids.get_by_right(&user) {
+                Some(_id) => {
+                    self.username_ids.remove_by_right(&user);
+                    self.player_states.remove(&user);
+                    info!("{}: {} was removed from the game", self.info().to_string(), user.to_string());
+
+                    self.game_state.number_of_players -= 1;
+                }
+                None => {
+                    info!("{}: tried to remove {} but he isn't in the game", self.info().to_string(), user.to_string());
+                }
+            }
+        } else {
+            info!("{}: tried to remove {} but the game has already started", self.info().to_string(), user.to_string());
+        }
     }
 
     async fn send_entities(&self, user: UserInfo, entity_type: String, identifier: u8) {

@@ -3,6 +3,7 @@ extends VBoxContainer
 @onready var player_list_node = $player_list
 @onready var ready_button = $button_bar/ready
 @onready var launch_button = $button_bar/launch
+@onready var cancel_button = $button_bar/cancel
 
 var player_scene = preload("res://scenes/ui/game.tscn")
 var player_nodes_hash = {}
@@ -11,6 +12,7 @@ func _ready():
 	if Multiplayer:
 		ready_button.pressed.connect(Multiplayer._send_ready)
 		launch_button.pressed.connect(Multiplayer._send_launch)
+		cancel_button.pressed.connect(Multiplayer._send_leave)
 		Multiplayer.received_lobby_state.connect(set_player)
 
 func set_player(info_bytes, user_string):

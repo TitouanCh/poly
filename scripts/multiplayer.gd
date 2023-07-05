@@ -209,3 +209,7 @@ func _send_ready():
 func _send_launch():
 	var message = PackedByteArray("lau".to_utf8_buffer())
 	_client.send(message)
+
+func _send_leave():
+	var message = PackedByteArray("lea".to_utf8_buffer())
+	_client.send(message)
