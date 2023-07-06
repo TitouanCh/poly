@@ -18,7 +18,9 @@ func _setup(n: int, t: String, number_of_players: int, max_number_of_players: in
 	
 	title_node.text = title
 	description_node.text = str(number_of_players) + "/" + str(max_number_of_players) + " players"
-	join_button.disabled = phase != 0
+	if phase != 0: # game is in progress
+		join_button.disabled = true
+		join_button.text = "in progress"
 
 func join_game_clicked():
 	join.emit(id)

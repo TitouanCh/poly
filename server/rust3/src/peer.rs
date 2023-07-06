@@ -176,7 +176,7 @@ impl Peer {
                     match self.connected.get(&info) {
                         Some(sender) => {
                             let _ = sender.send(Message { info: self.info(), bytes: vec![108, 101, 97] }).await;
-                            info!("{}: Leaving {}", self.info().to_string(), info.to_string());
+                            info!("{}: Attempting to leave active game {}", self.info().to_string(), info.to_string());
                         }
                         None => { info!("{}: Tried to leave but no longer connected to active game", self.info().to_string()) }
                     }

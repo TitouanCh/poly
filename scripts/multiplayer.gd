@@ -62,7 +62,8 @@ func _handle_client_data(data) -> void:
 		# Start the game
 		if message["content"][0] == "s":
 			print("Starting!!!")
-			received_start_game.emit(message["content"][1])
+			#received_start_game.emit(message["content"][1])
+			received_start_game.emit()
 		
 #	var data_str = data.get_string_from_utf8()
 #	print("Received data: ", data_str, " or ", data)
