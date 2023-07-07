@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://w24c1kwsu6ro"]
+
+[ext_resource type="Script" path="res://battle-engine.gd" id="1_2kmx5"]
+
+[node name="battle-engine" type="Node2D"]
+script = ExtResource("1_2kmx5")
