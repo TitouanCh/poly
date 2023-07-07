@@ -1,24 +1,25 @@
 extends Node2D
 
-func placer(unit_position: Vector2, unit_angle: float, unit: Unit) -> Array:
-	var soldier_positions = []
-	
-	for i in range(unit.n):
-		soldier_positions.append(Vector2(i % unit.width, floor(i / unit.width)))
-	
-	return soldier_positions
+var test: Unit
 
 func engine_process(detla, list_of_units):
 	pass
 
 func _ready():
 #	var test2 = Unit.new()
-	var test = Constants.unit_compendium[0].clone()
-	print(test)
+	test = Constants.unit_compendium[0].clone()
+	test.change_position(Vector2(200, 200), 0)
+	
+	print(test.soldiers)
 
 func _process(delta):
 #	print(Constants.unit_compendium)
 	queue_redraw()
 
-#func _draw():
-#	draw_circle()
+func _draw():
+	draw_unit(test)
+
+func draw_unit(unit: Unit):
+	for i in range(len(unit.soldiers)):
+		draw_circle(unit.positions[i] + unit.position, 4, Color(255, 255, 255))
+	draw_circle(unit.position, 3, Color(255, 0, 0))	
