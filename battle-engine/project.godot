@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 Constants="*res://constants.gd"
 Unit_Class="*res://unit_class.gd"
 
+[display]
+
+window/size/viewport_height=1000
+
 [rendering]
 
 environment/defaults/default_clear_color=Color(0.0901961, 0.0901961, 0.0901961, 1)
