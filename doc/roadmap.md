@@ -48,3 +48,11 @@
     
 
 **v0.2.0: Play with your friends**
+- Combat engine
+    - Placing unit (position & angle) ✅
+    - Moving units over time ✅
+    - Select/Deselect units ✅
+    - Unit collision ?
+    - Queue orders ?
+    - Rotate then move ?
+    - Cleanup mouse code ?
