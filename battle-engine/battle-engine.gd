@@ -21,31 +21,117 @@ func engine_process(delta, units):
 			units[i].incombat_timer += delta
 
 func combat(delta, unit1: Unit, unit2: Unit):
+	# Sort unit by width (corresponds to combat capacity)
 	var max_width_unit = unit1
 	var min_width_unit = unit2
-	if unit2.width - unit2.soldiers_incombat > unit1.width - unit1.soldiers_incombat:
+	if unit2.get_actual_width() > unit1.get_actual_width():
 		max_width_unit = unit2
 		min_width_unit = unit1
 	
+	# A unit cannot have more active combatants than width
 	var combatants = max_width_unit.soldiers_incombat
 	
-	for i in range(len(min_width_unit.PStype)):
+	# Setup duels
+	for i in range(min_width_unit.n):
 		if combatants == max_width_unit.width:
 			break
 		
+		# Check if current surveyed soldier is dead
+		if min_width_unit.PShealth[i] == 0:
+			continue
+		
+		# If not, find another soldier to fight with him
 		if !min_width_unit.PSincombat[i]:
 			for j in range(len(max_width_unit.PStype)):
+				# Check if oponent is dead
+				if max_width_unit.PShealth[j] == 0:
+					continue
+				
+				# If not and opponent is not in combat, set both soldiers in a duel
 				if !max_width_unit.PSincombat[j]:
 					min_width_unit.PSincombat[i] = true
 					max_width_unit.PSincombat[j] = true
 					min_width_unit.soldiers_incombat += 1
 					max_width_unit.soldiers_incombat += 1
+					min_width_unit.PSopponent[i] = [max_width_unit.idx, j]
+					max_width_unit.PSopponent[j] = [min_width_unit.idx, i]
+				
 					combatants += 1
-					
+					# Calculate and set combat positions
 					var combat_positions = get_combat_positions(min_width_unit.PSposition[i], max_width_unit.PSposition[j])
 					min_width_unit.PScombat_position[i] = combat_positions[0]
 					max_width_unit.PScombat_position[j] = combat_positions[1]
 					break
+	
+	# Calculate damage taken to soldiers in duel
+	for i in range(min_width_unit.n):
+		# Check if has a duel opponent and is in combat
+		if min_width_unit.PSincombat[i] and min_width_unit.PSopponent[i]:
+			# Check if duel opponent is in max_width_unit
+			# PSopponent format [opponent_unit_idx, opponent_soldier_idx] --
+			if min_width_unit.PSopponent[i][0] == max_width_unit.idx:
+				min_width_unit.PStake_damage(i, delta, max_width_unit.PSattack[min_width_unit.PSopponent[i][1]])
+	
+	# Do the same for the other unit
+	for j in range(max_width_unit.n):
+		if max_width_unit.PSincombat[j] and max_width_unit.PSopponent[j]:
+			if max_width_unit.PSopponent[j][0] == min_width_unit.idx:
+				max_width_unit.PStake_damage(j, delta, min_width_unit.PSattack[max_width_unit.PSopponent[j][1]])
+	
+	# Check for death
+	for i in range(min_width_unit.n):
+		# If the soldier has an opponent
+		if min_width_unit.PSopponent[i]:
+			if min_width_unit.PSopponent[i][0] == max_width_unit.idx:
+				# If the soldier died
+				if min_width_unit.PShealth[i] == 0:
+					# Let opponent leave combat
+					max_width_unit.PSincombat[min_width_unit.PSopponent[i][1]] = false
+					max_width_unit.soldiers_incombat -= 1
+				# If opponent died
+				if max_width_unit.PShealth[min_width_unit.PSopponent[i][1]] == 0:
+					# Remove target
+					min_width_unit.PSopponent[i] = null
+		
+	# Do the same for other unit
+	for j in range(max_width_unit.n):
+		# If the soldier has an opponent
+		if max_width_unit.PSopponent[j]:
+			if max_width_unit.PSopponent[j][0] == min_width_unit.idx:
+				# If the soldier died
+				if max_width_unit.PShealth[j] == 0:
+					# Let opponent leave combat
+					min_width_unit.PSincombat[max_width_unit.PSopponent[j][1]] = false
+					min_width_unit.soldiers_incombat -= 1
+				# If opponent died
+				if min_width_unit.PShealth[max_width_unit.PSopponent[j][1]] == 0:
+					# Remove target
+					max_width_unit.PSopponent[j] = null
+			
+		
+				# If not, make them fight and take damage
+#				if !max_width_unit.PSincombat[j]:
+#					min_width_unit.PStake_damage(i, delta, max_width_unit.PSattack[j])
+#					max_width_unit.PStake_damage(j, delta, min_width_unit.PSattack[i])
+#
+#					# Check if one of the adversary is dead, if so, remove the other from combat
+#					if min_width_unit.PShealth[i] == 0:
+#						max_width_unit.PSincombat[j] = false
+#					else:
+#						max_width_unit.soldiers_incombat += 1
+#						max_width_unit.PSincombat[j] = true
+#					if max_width_unit.PShealth[j] == 0:
+#						min_width_unit.PSincombat[i] = false
+#					else:
+#						min_width_unit.soldiers_incombat += 1
+#						min_width_unit.PSincombat[i] = true
+#
+#					combatants += 1
+#
+#					var combat_positions = get_combat_positions(min_width_unit.PSposition[i], max_width_unit.PSposition[j])
+#					min_width_unit.PScombat_position[i] = combat_positions[0]
+#					max_width_unit.PScombat_position[j] = combat_positions[1]
+#					break
 
 func get_combat_positions(soldier1_position: Vector2, soldier2_position: Vector2):
 	var avg = (soldier1_position + soldier2_position)/2
@@ -57,6 +143,7 @@ func _ready():
 #		create_unit(0, Vector2(1000 * randf(), 1000 * randf()), 0)
 	
 	create_unit(0, Vector2(800, 200), 0, 1)
+	create_unit(0, Vector2(800, 800), 0, 1)
 	create_unit(0, Vector2(200, 200), 0, 2)
 
 func _process(delta):
@@ -106,12 +193,16 @@ func _draw():
 
 func draw_unit(unit: Unit, preview = false):
 	for i in range(len(unit.PStype)):
-		draw_circle(unit.PSposition[i], 2, Color(255 * int(!preview), 255, 255))
+		if unit.PShealth[i] > 0:
+			draw_circle(unit.PSposition[i], 2, Color(255 * int(!preview), 255, 255))
+		if unit.PShealth[i] < 100:
+			draw_line(unit.PSposition[i] + Vector2(-5, -12), unit.PSposition[i] + Vector2(unit.PShealth[i] * 0.1, -12), Color(0, 255, 0), 1)
 	draw_circle(unit.center_of_mass, 3, Color(int(!unit.selected) * 255, int(unit.selected) * 255, 0))	
 
 func create_unit(compendium_idx, _position, _angle, _team):
 	var unit = Constants.create_unit_from(Constants.unit_compendium[compendium_idx])
 	unit.change_position(_position, _angle)
+	unit.idx = len(units)
 	unit.team = _team
 	units.append(unit)
 #	unit.target_positions = unit.place_soldiers(Vector2(800, 800), 180)

@@ -3,7 +3,8 @@ extends Object
 class_name Unit
 
 # Unit type specific info
-var name = "Default"
+var name: String = "Default"
+var idx: int = 0
 var stance: String = "regular"
 var speed: float = 100
 var spacing: float
@@ -23,7 +24,10 @@ var PSposition = []
 var PStarget_position = []
 var PScombat_position = []
 var PSincombat = []
-
+var PSopponent = []
+var PShealth = []
+var PSattack = []
+var PSdefense = []
 
 var orders = []
 
@@ -34,18 +38,31 @@ var soldiers_incombat = 0
 # DEBUG --
 var selected = false
 
-func setup(_name, _PStype, _spacing, _width, _stance = "regular"):
+func get_actual_width() -> int:
+	return width - soldiers_incombat + floor(incombat_timer)
+
+func PStake_damage(soldier_idx, delta, opponent_attack):
+	PShealth[soldier_idx] -= opponent_attack * delta * (1.0 + 0.1 * randf()) * 10
+	if PShealth[soldier_idx] < 0: PShealth[soldier_idx] = 0
+
+func setup(_name, _idx, _PStype, _spacing, _width, _soldier_compendium, _stance = "regular"):
 	name = _name
+	idx = _idx
 	PStype = _PStype
 	spacing = _spacing
 	width = _width
 	stance = _stance
 	n = len(PStype)
-	for i in range(n): PSincombat.append(false)
+	for i in range(n):
+		PSincombat.append(false)
+		PSopponent.append(null)
+		PShealth.append(_soldier_compendium[PStype[i]]["health"])
+		PSdefense.append(_soldier_compendium[PStype[i]]["defense"])
+		PSattack.append(_soldier_compendium[PStype[i]]["attack"])
 	return self
 
 func clone():
-	return Unit.new().setup(name, PStype, spacing, width, stance)
+	return Unit.new().setup(name, idx, PStype, spacing, width, Constants.soldier_compendium, stance)
 
 func change_position(_position, _angle):
 	PSposition = place_soldiers(_position, _angle)
