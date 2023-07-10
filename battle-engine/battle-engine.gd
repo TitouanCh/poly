@@ -145,8 +145,8 @@ func _ready():
 #		create_unit(0, Vector2(1000 * randf(), 1000 * randf()), 0)
 	
 	create_unit(0, Vector2(800, 200), 0, 1)
-	create_unit(0, Vector2(800, 800), 0, 2)
-	create_unit(0, Vector2(200, 200), 0, 3)
+#	create_unit(0, Vector2(800, 800), 0, 2)
+#	create_unit(0, Vector2(200, 200), 0, 3)
 
 func _process(delta):
 	engine_process(delta, units)

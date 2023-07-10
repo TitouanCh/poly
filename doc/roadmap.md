@@ -53,6 +53,8 @@
     - Moving units over time ✅
     - Select/Deselect units ✅
     - Unit collision ?
-    - Queue orders ?
-    - Rotate then move ?
-    - Cleanup mouse code ?
+    - Queue orders ✅
+    - Rotate then move ✅
+    - Cleanup mouse code ✅
+    - Fix rotation bug ✅
+    - Simple melee combat ✅

@@ -78,6 +78,8 @@ func change_position(_position, _angle):
 	PScombat_position = PSposition.duplicate()
 	center_of_mass = _position
 	PStarget_position = PSposition
+	current_position = _position
+	current_angle = _angle
 
 func place_soldiers(_position: Vector2, unit_angle: float = 0.0) -> Array:
 	var soldier_positions = []
@@ -133,13 +135,17 @@ func move(delta):
 func order_check(delta):
 	var order_epsilon = 20
 	var sum = 0
+	print(orders)
 	for i in range(len(PSposition)):
 		if !PSincombat[i] and PSalive[i]:
 			sum += PSposition[i].distance_to(PStarget_position[i])
+			print(PSposition[i].distance_to(PStarget_position[i]))
 	
 	if sum < order_epsilon:
-#		
+		print("next")
 		queue_next_order()
+	
+	print(" --- ")
 
 func queue_next_order():
 	if len(orders) > 0:
@@ -148,6 +154,8 @@ func queue_next_order():
 			current_angle = orders[0][1]
 		if orders[0][0] == "g":
 			current_position = orders[0][1]
+#		if orders[0][0] == "e":
+#			current_position
 		
 		orders.remove_at(0)
 		
@@ -158,6 +166,9 @@ func queue_next_order():
 			# Rotate order
 			if orders[0][0] == "r":
 				PStarget_position = place_soldiers(current_position, orders[0][1])
+	if len(orders) == 0:
+		# Add an empty order
+		orders.append(["e"])
 
 # DEBUG --
 func preview_at(_position, _angle) -> Unit:
