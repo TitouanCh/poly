@@ -80,7 +80,7 @@ func duel(delta, unit1: Unit, unit2: Unit):
 	var combatants = max_width_unit.soldiers_incombat
 	
 	# Setup duels
-	for i in range(min_width_unit.n):
+	for i in min_width_unit.sort_soldiers_by_distance_to_point(max_width_unit.center_of_mass):
 		if combatants == max_width_unit.width:
 			break
 		
@@ -90,7 +90,7 @@ func duel(delta, unit1: Unit, unit2: Unit):
 		
 		# If not, find another soldier to fight with him
 		if !min_width_unit.PSincombat[i]:
-			for j in range(len(max_width_unit.PStype)):
+			for j in max_width_unit.sort_soldiers_by_distance_to_point(min_width_unit.PSposition[i]):
 				# Check if oponent is dead
 				if !max_width_unit.PSalive[j]:
 					continue
@@ -145,8 +145,8 @@ func _ready():
 #		create_unit(0, Vector2(1000 * randf(), 1000 * randf()), 0)
 	
 	create_unit(0, Vector2(800, 200), 0, 1)
-#	create_unit(0, Vector2(800, 800), 0, 2)
-#	create_unit(0, Vector2(200, 200), 0, 3)
+	create_unit(0, Vector2(800, 800), 0, 2)
+	create_unit(0, Vector2(200, 200), 0, 3)
 
 func _process(delta):
 	engine_process(delta, units)

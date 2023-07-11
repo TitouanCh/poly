@@ -2,6 +2,9 @@ extends Object
 
 class_name Unit
 
+# Global param
+var LERP_MOVEMENT = false
+
 # Unit type specific info
 var name: String = "Default"
 var idx: int = 0
@@ -20,7 +23,7 @@ var incombat = true
 var alive = 0
 
 # Per soldier info
-var PStype = [0, 0, 0, 0]
+var PStype = []
 var PSposition = []
 var PStarget_position = []
 var PScombat_position = []
@@ -42,6 +45,21 @@ var selected = false
 
 func get_actual_width() -> int:
 	return width - soldiers_incombat + floor(incombat_timer)
+
+func sort_soldiers_by_distance_to_point(point: Vector2) -> Array:
+	var min
+	var min_i
+	var sorted = []
+	while len(sorted) < n:
+		min = -1
+		min_i = 0
+		for i in range(n):
+			if (PSposition[i].distance_squared_to(point) < min or min == -1) and !sorted.has(i):
+				min = PSposition[i].distance_squared_to(point)
+				min_i = i
+		sorted.append(min_i)
+#	print(sorted)
+	return sorted
 
 func PStake_damage(soldier_idx, delta, opponent_attack):
 	PShealth[soldier_idx] -= opponent_attack * delta * (1.0 + 0.5 * randf()) * 10
@@ -103,6 +121,7 @@ func process(delta):
 		if _incombat:
 			incombat = true
 			break
+	order_check(delta)
 
 func move(delta):
 	var sum = Vector2.ZERO
@@ -114,7 +133,9 @@ func move(delta):
 			direction = direction.normalized()
 			var speed_mod = speed
 			if distance < deaccel_epsilon:
-				speed_mod = max(lerp(0.0, speed, distance/deaccel_epsilon), 1.0)
+				if LERP_MOVEMENT:
+					speed_mod = max(lerp(0.0, speed, distance/deaccel_epsilon), 1.0)
+				else: speed_mod = (distance/deaccel_epsilon) * speed
 			if incombat:
 				speed_mod *= 0.1
 			PSposition[i] += direction * speed_mod * delta
@@ -125,27 +146,22 @@ func move(delta):
 			direction = direction.normalized()
 			var speed_mod = speed
 			if distance < deaccel_epsilon:
-				speed_mod = max(lerp(0.0, speed, distance/deaccel_epsilon), 1.0)
+				if LERP_MOVEMENT:
+					speed_mod = max(lerp(0.0, speed, distance/deaccel_epsilon), 1.0)
+				else: speed_mod = (distance/deaccel_epsilon) * speed
 			PSposition[i] += direction * speed_mod * delta
-#	print(soldiers_incombat)
 	center_of_mass = sum/(alive - soldiers_incombat)
-	
-	order_check(delta)
 
 func order_check(delta):
 	var order_epsilon = 20
 	var sum = 0
-	print(orders)
+
 	for i in range(len(PSposition)):
 		if !PSincombat[i] and PSalive[i]:
 			sum += PSposition[i].distance_to(PStarget_position[i])
-			print(PSposition[i].distance_to(PStarget_position[i]))
 	
 	if sum < order_epsilon:
-		print("next")
 		queue_next_order()
-	
-	print(" --- ")
 
 func queue_next_order():
 	if len(orders) > 0:
