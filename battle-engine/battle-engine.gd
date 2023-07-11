@@ -8,7 +8,7 @@ func engine_process(delta, units):
 	for i in range(len(units)):
 		# Move unit
 		units[i].move(delta)
-		units[i].process(delta)
+		units[i].process(delta, units)
 		# Check if enemies are in range
 #		units[i].incombat = false
 		for j in range(i + 1, len(units)):
@@ -19,10 +19,6 @@ func engine_process(delta, units):
 #					units[i].incombat = true
 				if units[i].incombat and units[j].incombat:
 					damage(delta, units[i], units[j])
-			
-		# If incombat, add time to combat timer
-#		if units[i].incombat:
-#			units[i].incombat_timer += delta
 
 func damage(delta, unit1: Unit, unit2: Unit):
 	# Calculate damage taken to soldiers in duel
@@ -63,10 +59,6 @@ func damage(delta, unit1: Unit, unit2: Unit):
 					unit2.PSincombat[j] = false
 					unit2.PSopponent[j] = null
 					unit2.soldiers_incombat -= 1
-				# If opponent died
-#				if unit1.PShealth[unit2.PSopponent[j][1]] == 0:
-#					# Remove target
-#					unit2.PSopponent[j] = null
 
 func duel(delta, unit1: Unit, unit2: Unit):
 	# Sort unit by width (corresponds to combat capacity)
@@ -112,41 +104,19 @@ func duel(delta, unit1: Unit, unit2: Unit):
 					break
 		
 				# If not, make them fight and take damage
-#				if !max_width_unit.PSincombat[j]:
-#					min_width_unit.PStake_damage(i, delta, max_width_unit.PSattack[j])
-#					max_width_unit.PStake_damage(j, delta, min_width_unit.PSattack[i])
-#
-#					# Check if one of the adversary is dead, if so, remove the other from combat
-#					if min_width_unit.PShealth[i] == 0:
-#						max_width_unit.PSincombat[j] = false
-#					else:
-#						max_width_unit.soldiers_incombat += 1
-#						max_width_unit.PSincombat[j] = true
-#					if max_width_unit.PShealth[j] == 0:
-#						min_width_unit.PSincombat[i] = false
-#					else:
-#						min_width_unit.soldiers_incombat += 1
-#						min_width_unit.PSincombat[i] = true
-#
-#					combatants += 1
-#
-#					var combat_positions = get_combat_positions(min_width_unit.PSposition[i], max_width_unit.PSposition[j])
-#					min_width_unit.PScombat_position[i] = combat_positions[0]
-#					max_width_unit.PScombat_position[j] = combat_positions[1]
-#					break
 
 func get_combat_positions(soldier1_position: Vector2, soldier2_position: Vector2):
 	var avg = (soldier1_position + soldier2_position)/2
 	return [avg, avg]
 
 func _ready():
-#	# PERFORMANCE TEST
+	# PERFORMANCE TEST
 #	for i in range(100):
-#		create_unit(0, Vector2(1000 * randf(), 1000 * randf()), 0)
+#		create_unit(0, Vector2(1000 * randf(), 1000 * randf()), 0, randi())
 	
 	create_unit(0, Vector2(800, 200), 0, 1)
-	create_unit(0, Vector2(800, 800), 0, 2)
-	create_unit(0, Vector2(200, 200), 0, 3)
+	create_unit(0, Vector2(800, 800), 0, 1)
+	create_unit(0, Vector2(200, 200), 0, 1)
 
 func _process(delta):
 	engine_process(delta, units)

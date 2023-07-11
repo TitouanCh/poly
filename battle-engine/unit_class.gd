@@ -25,6 +25,8 @@ var alive = 0
 # Per soldier info
 var PStype = []
 var PSposition = []
+var PSmass = []
+var PSspeed = []
 var PStarget_position = []
 var PScombat_position = []
 var PSincombat = []
@@ -83,6 +85,8 @@ func setup(_name, _idx, _PStype, _spacing, _width, _soldier_compendium, _stance 
 		PSopponent.append(null)
 		PSalive.append(true)
 		PStarget_position.append(Vector2.ZERO)
+		PSspeed.append(Vector2.ZERO)
+		PSmass.append(2)
 		PShealth.append(_soldier_compendium[PStype[i]]["health"])
 		PSdefense.append(_soldier_compendium[PStype[i]]["defense"])
 		PSattack.append(_soldier_compendium[PStype[i]]["attack"])
@@ -115,13 +119,25 @@ func place_soldiers(_position: Vector2, unit_angle: float = 0.0) -> Array:
 	
 	return soldier_positions
 
-func process(delta):
+func process(delta, other_units):
 	incombat = false
 	for _incombat in PSincombat:
 		if _incombat:
 			incombat = true
 			break
 	order_check(delta)
+	
+	# Physics -- Simple ---
+	for unit in other_units: 
+		if unit.center_of_mass.distance_to(center_of_mass) < 1000:
+			for i in range(n):
+				for j in unit.n:
+					while PSposition[i].distance_to(unit.PSposition[j]) < PSmass[i] + unit.PSmass[j] and unit.PSposition[j] != PSposition[i]:
+						# Collision
+#						print("Collision!!")
+						var collision_axe = (unit.PSposition[j] - PSposition[i]).normalized()
+						PSposition[i] -= collision_axe * unit.PSmass[j] * 0.1
+						unit.PSposition[j] += collision_axe * PSmass[i] * 0.1
 
 func move(delta):
 	var sum = Vector2.ZERO
@@ -138,6 +154,7 @@ func move(delta):
 				else: speed_mod = (distance/deaccel_epsilon) * speed
 			if incombat:
 				speed_mod *= 0.1
+			PSspeed[i] = direction * speed_mod * delta - PSposition[i]
 			PSposition[i] += direction * speed_mod * delta
 			sum += PSposition[i]
 		else:
@@ -149,6 +166,7 @@ func move(delta):
 				if LERP_MOVEMENT:
 					speed_mod = max(lerp(0.0, speed, distance/deaccel_epsilon), 1.0)
 				else: speed_mod = (distance/deaccel_epsilon) * speed
+			PSspeed[i] = direction * speed_mod * delta - PSposition[i]
 			PSposition[i] += direction * speed_mod * delta
 	center_of_mass = sum/(alive - soldiers_incombat)
 
