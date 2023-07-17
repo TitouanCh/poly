@@ -52,9 +52,11 @@
     - Placing unit (position & angle) ✅
     - Moving units over time ✅
     - Select/Deselect units ✅
-    - Unit collision ?
+    - Unit collision ✅
     - Queue orders ✅
     - Rotate then move ✅
     - Cleanup mouse code ✅
     - Fix rotation bug ✅
     - Simple melee combat ✅
+    - Duel closest ✅
+    - Physics ✅

@@ -22,7 +22,8 @@ Unit_Class="*res://unit_class.gd"
 
 [display]
 
-window/size/viewport_height=1000
+window/size/viewport_width=1920
+window/size/viewport_height=1200
 
 [input]
 

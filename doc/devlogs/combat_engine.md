@@ -30,14 +30,45 @@ A possible way to solve
 
 ___
 
+There are many games out there that allow you to control massive armies and let you battle hundred if not thousands of soldiers toghether.
 
-I've always been a big fan of massive battles in games, whether it be in RTS like Total War or turned-base strategy games.
+Mostly RTSs and strategy games.
 
-Lately, I've been wondering what it would take for me to program a combat engine. What I mean by a combat engine is a programm that would allow me to simulate combat between massive army on my own machine.
+What does it take to make a game like those, what does it take to build a combat engine.
 
-Just like a physics engine allows you to compute how rigid bodies move and evolve over time.
+Now first, what exactly do I mean by a combat engine?
 
-A combat engine should be able to how two squads of knights would duke it out depending the 
+I am talking about a program that takes units and soldier data and simulates the outcome of a battle.
+
+Sorta off like how a physics engine takes objects' mass and position and predicts where they will end up next. 
+
+Before we start programming this engine, let me first start by defining what I mean by some of the terms I am using
+
+In my engine, individual soldiers are represented as dots, I will agree that it's not the prettiest but graphics aren't the focus here.
+
+I will call units groups of dots/soldiers.
+
+Let's first start by implementing basic movement for our soldiers.
+
+...
+
+As you can see, movement of the soldiers is a rigid and stuttery, let's fix that by slowing them once they get close to their target destination using linear interpolation.
+
+Much better!
+
+On a sidenote, as you can see, I've made it so soldiers first rotate before moving, to me this looks more realistic but of course I'm open to feedback in the comments.
+
+Next, it would be nice if soldiers didn't phase throught each other. This is why I then added unit collision. This will be more useful once I add a way for units to charge and react to impacts;
+
+And finally, I've added basic melee combat. Once units are close enought, the closest soldiers will attack. I've made it so that the soldiers attack in wave so as to create a sort of frontline that gets progressively messier over time.
+
+There is still a tiny bug at the end where the soldiers don't collide but other than that this system works fine for now
+
+Perpective, right now this is all just a very basic and simple system. I'm using GDscript for everything but the plan is to move to a more performant language so as to be able to simulate many units.
+
+I was thinking of Rust and keeping the Godot frontend for display.
+
+Let me know your thoughts... And thank you for watching.
 
 I. Unit movement
 
@@ -52,3 +83,5 @@ II. Unit selection and teams
 III. Melee Combat
 
 a) 
+
+Sources: https://www.youtube.com/watch?v=MzaLrGCDit0

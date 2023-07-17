@@ -2,7 +2,7 @@ extends Node2D
 
 var units = []
 var base_mouse_position = null
-var combat_range = 100
+var combat_range = 400
 
 func engine_process(delta, units):
 	for i in range(len(units)):
@@ -115,8 +115,8 @@ func _ready():
 #		create_unit(0, Vector2(1000 * randf(), 1000 * randf()), 0, randi())
 	
 	create_unit(0, Vector2(800, 200), 0, 1)
-	create_unit(0, Vector2(800, 800), 0, 1)
-	create_unit(0, Vector2(200, 200), 0, 1)
+	create_unit(0, Vector2(800, 800), 0, 2)
+	create_unit(0, Vector2(200, 200), 0, 3)
 
 func _process(delta):
 	engine_process(delta, units)
@@ -171,7 +171,7 @@ func _draw():
 func draw_unit(unit: Unit, preview = false):
 	for i in range(len(unit.PStype)):
 		if unit.PShealth[i] > 0:
-			draw_circle(unit.PSposition[i], 2, Color(255 * int(!preview), 255, 255))
+			draw_circle(unit.PSposition[i], 8, Color(255 * int(!preview), 255, 255))
 		if unit.PShealth[i] < 100:
 			draw_line(unit.PSposition[i] + Vector2(-5, -12), unit.PSposition[i] + Vector2(unit.PShealth[i] * 0.2 - 5, -12), Color(0, 255, 0), 1)
 	draw_circle(unit.center_of_mass, 3, Color(int(!unit.selected) * 255, int(unit.selected) * 255, 0))	

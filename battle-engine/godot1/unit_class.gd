@@ -86,7 +86,7 @@ func setup(_name, _idx, _PStype, _spacing, _width, _soldier_compendium, _stance 
 		PSalive.append(true)
 		PStarget_position.append(Vector2.ZERO)
 		PSspeed.append(Vector2.ZERO)
-		PSmass.append(2)
+		PSmass.append(8)
 		PShealth.append(_soldier_compendium[PStype[i]]["health"])
 		PSdefense.append(_soldier_compendium[PStype[i]]["defense"])
 		PSattack.append(_soldier_compendium[PStype[i]]["attack"])

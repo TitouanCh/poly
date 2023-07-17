@@ -28,7 +28,7 @@ var unit_compendium = [
 		"Basic Melee",
 		0,
 		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-		19,
+		50,
 		6,
 		soldier_compendium
 	)
