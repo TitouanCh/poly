@@ -1,4 +1,4 @@
-use std::{ops::{Add, Sub}, array, collections::{HashMap}};
+use std::{ops::{Add, Sub, Mul, Div, AddAssign}, array, collections::{HashMap}};
 use log::info;
 use env_logger::Env;
 
@@ -13,6 +13,8 @@ fn main() {
 
     let mut battle_engine = BattleEngine::new();
     battle_engine.add_unit(0, 0, PunkVector2::zero(), 0.0);
+
+    let test = PunkVector2::new(2.0, 3.0);
 
     info!("First steps!!");
 }
@@ -33,8 +35,16 @@ impl BattleEngine {
         BattleEngine { units, soldier_compendium, unit_compendium }
     }
 
-    pub fn process(delta: f32) {
-         
+    pub fn process(&mut self, delta: f32) {
+        /*
+        for key in self.units.clone().keys() {
+            self.units.get_mut(key).unwrap().process(delta, &HashMap::new());
+        }
+         */
+
+        for (idx, unit) in &mut self.units {
+            unit.process(delta, &HashMap::new());
+        }
     }
 
     pub fn add_unit(&mut self, variety: i32, team: i32, position: PunkVector2, angle: f32) {
@@ -54,6 +64,7 @@ pub struct UnitInfo {
     soldiers: Vec<i32>
 }
 
+#[derive(Clone)]
 pub struct Unit {
     info: UnitInfo,
     n: i32,
@@ -66,6 +77,7 @@ pub struct Unit {
     team: i32,
     incombat: bool,
     soldiers_alive: i32,
+    soldiers_incombat: i32,
 
     // Per soldier info
     soldiers: Vec<Soldier>
@@ -80,13 +92,43 @@ impl Unit {
         let team = team;
         let incombat = false;
         let soldiers_alive = n;
+        let soldiers_incombat = 0;
         let mut soldiers = Vec::new();
 
         for soldier_variety in &info.soldiers {
             soldiers.push(Soldier::new(soldier_compendium.get(soldier_variety).unwrap().clone(), position));
         }
 
-        Unit {info, n, idx, center_of_mass, current_angle, current_position, team, incombat, soldiers_alive, soldiers}
+        Unit {info, n, idx, center_of_mass, current_angle, current_position, team, incombat, soldiers_alive, soldiers_incombat, soldiers}
+    }
+
+    pub fn process(&mut self, delta: f32, other_units: &HashMap<i32, Unit>) {
+        self.movement(delta);
+    }
+
+    pub fn movement(&mut self, delta: f32) {
+        let mut sum = PunkVector2::zero();
+        let deaccel_epsilon = 50.0;
+
+        for soldier in &mut self.soldiers {
+            if soldier.incombat && soldier.alive {
+                // Combat position
+            } else {
+                // Regular position
+                let direction = soldier.target_position - soldier.position;
+                let distance = direction.length();
+                let direction = direction.normalized();
+                let mut speed_modifier = self.info.speed;
+                if distance < deaccel_epsilon {
+                    speed_modifier = f32::max(punk_lerp(0.0, self.info.speed, distance/deaccel_epsilon), 1.0);
+                }
+                // soldier.speed = direction * speed_modifier * delta - soldier.position;
+                soldier.position += direction * speed_modifier * delta;
+                sum += soldier.position;
+            }
+        }
+
+        self.center_of_mass = sum / (self.soldiers_alive - self.soldiers_incombat) as f32
     }
 }
 
@@ -100,6 +142,7 @@ pub struct SoldierInfo {
     mass: f32,
 }
 
+#[derive(Clone)]
 pub struct Soldier {
     info: SoldierInfo,
     position: PunkVector2,
@@ -138,6 +181,44 @@ impl Sub for PunkVector2 {
     }
 }
 
+impl Mul<PunkVector2> for PunkVector2 {
+    type Output = Self;
+
+    fn mul(self, other: Self) -> Self {
+        Self { x: self.x * other.x, y: self.y * other.y }
+    }
+}
+
+impl Mul<f32> for PunkVector2 {
+    type Output = Self;
+
+    fn mul(self, other: f32) -> Self {
+        Self { x: self.x * other, y: self.y * other }
+    }
+}
+
+impl Div<PunkVector2> for PunkVector2 {
+    type Output = Self;
+
+    fn div(self, other: Self) -> Self {
+        Self { x: self.x / other.x, y: self.y / other.y }
+    }
+}
+
+impl Div<f32> for PunkVector2 {
+    type Output = Self;
+
+    fn div(self, other: f32) -> Self {
+        Self { x: self.x / other, y: self.y / other }
+    }
+}
+
+impl AddAssign for PunkVector2 {
+    fn add_assign(&mut self, other: Self) {
+        *self = PunkVector2{ x: self.x + other.x, y: self.y + other.y};
+    }
+}
+
 impl PunkVector2 {
     pub fn new(x: f32, y: f32) -> Self {
         PunkVector2 { x, y }
@@ -146,4 +227,17 @@ impl PunkVector2 {
     pub fn zero() -> Self {
         PunkVector2::new(0.0, 0.0)
     }
+
+    pub fn length(&self) -> f32 {
+        f32::sqrt(f32::powi(self.x, 2) + f32::powi(self.y, 2))
+    }
+
+    pub fn normalized(&self) -> PunkVector2 {
+        let length = self.length();
+        PunkVector2 { x : self.x / length, y: self.y / length }
+    }
+}
+
+pub fn punk_lerp(a: f32, b: f32, t: f32) -> f32 {
+    a * (1.0 - t) + b * t
 }
