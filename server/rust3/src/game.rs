@@ -344,7 +344,9 @@ impl Game {
     }
 
     fn setup_battle_engine(&mut self) {
-        
+        info!("{}: Starting battle engine", self.info().to_string());
+        self.battle_engine = Some(BattleEngine::new());
+        self.battle_engine.as_mut().unwrap().ready();
     }
 
 }

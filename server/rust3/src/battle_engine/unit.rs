@@ -6,31 +6,53 @@ use crate::battle_engine::punk_algebra::{
 };
 
 use crate::battle_engine::{order::{Order, OrderType}, soldier::{Soldier, SoldierInfo}};
+use crate::utilities::string_as_24_bytes;
+
+use super::soldier;
 
 #[derive(Clone)]
 pub struct UnitInfo {
     pub name: String,
-    pub stance: i32,
+    pub stance: u8,
     pub speed: f32,
     pub spacing: f32,
-    pub width: i32,
-    pub soldiers: Vec<i32>
+    pub width: u8,
+    pub soldiers: Vec<u8>
+}
+
+impl UnitInfo {
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+
+        // First 24 bytes are name then (in order): stance, width, speed, spacing
+        bytes.extend(string_as_24_bytes(self.name.clone()));
+        for value in [self.stance, self.width] {
+            bytes.extend(value.clone().to_le_bytes());
+        }
+        for value in [self.speed, self.spacing] {
+            bytes.extend(value.clone().to_le_bytes());
+        }
+
+        // TODO: Finally, add soldier types
+
+        bytes
+    }
 }
 
 #[derive(Clone)]
 pub struct Unit {
     info: UnitInfo,
-    n: i32,
+    n: u16,
 
     // Realtime
-    idx: i32,
+    idx: u32,
     center_of_mass: PunkVector2,
     current_angle: f32,
     current_position: PunkVector2,
-    team: i32,
+    team: u8,
     incombat: bool,
-    soldiers_alive: i32,
-    soldiers_incombat: i32,
+    soldiers_alive: u16,
+    soldiers_incombat: u16,
     orders: Vec<Order>,
 
     // Per soldier info
@@ -38,8 +60,8 @@ pub struct Unit {
 }
 
 impl Unit {
-    pub fn new(idx: i32, info: UnitInfo, position: PunkVector2, angle: f32, team: i32, soldier_compendium: &HashMap<i32, SoldierInfo>) -> Self {
-        let n: i32 = info.soldiers.len().try_into().unwrap();
+    pub fn new(idx: u32, info: UnitInfo, position: PunkVector2, angle: f32, team: u8, soldier_compendium: &HashMap<u8, SoldierInfo>) -> Self {
+        let n: u16 = info.soldiers.len().try_into().unwrap();
         let center_of_mass = position;
         let current_position: PunkVector2 = position;
         let current_angle = angle;
@@ -161,7 +183,7 @@ impl Unit {
             // Offset from center
             let soldier_position = 
                 (
-                    PunkVector2::new((i % self.info.width) as f32, f32::floor(i as f32 / self.info.width as f32))
+                    PunkVector2::new((i % self.info.width as u16) as f32, f32::floor(i as f32 / self.info.width as f32))
                     - PunkVector2::new((self.info.width as f32 - 1.0 ) / 2.0, (f32::ceil(self.n as f32 / self.info.width as f32) - 1.0) / 2.0)
                 ) * self.info.spacing
             ;
@@ -176,5 +198,44 @@ impl Unit {
         }
 
         soldier_positions
+    }
+
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+
+        // First 32 bytes are the unit idx
+        bytes.extend(self.idx.to_le_bytes());
+
+        // Next 16 bytes are the number of soldiers in the unit
+        bytes.extend(self.n.to_le_bytes());
+
+        // Next is in order: team, position, center of mass, angle, incombat, soldiers alive, soldiers in combat
+        bytes.extend(self.team.to_le_bytes());
+        for vector in [self.current_position, self.center_of_mass] {
+            bytes.extend(vector.to_bytes());
+        }
+        bytes.extend(self.current_angle.to_le_bytes());
+        bytes.push(self.incombat as u8);
+        for a in [self.soldiers_alive, self.soldiers_incombat] {
+            bytes.extend(a.to_le_bytes());
+        }
+
+        // Next bytes are unit info
+        bytes.extend(self.info.to_bytes());
+
+        // Add a seperator for good measure
+        bytes.push(255);
+
+        // Next is orders
+        for order in &self.orders {
+            bytes.extend(order.to_bytes());
+        }
+
+        // And finally per soldier data
+        for soldier in &self.soldiers {
+            bytes.extend(soldier.to_bytes());
+        }
+        
+        bytes
     }
 }

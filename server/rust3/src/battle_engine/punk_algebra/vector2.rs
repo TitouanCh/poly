@@ -62,7 +62,7 @@ impl AddAssign for PunkVector2 {
 
 impl PunkVector2 {
     pub fn new(x: f32, y: f32) -> Self {
-        PunkVector2 { x, y }
+        PunkVector2{ x, y }
     }
 
     pub fn zero() -> Self {
@@ -86,5 +86,13 @@ impl PunkVector2 {
 
     pub fn distance_to(&self, point: PunkVector2) -> f32 {
         f32::sqrt(f32::powi(self.x - point.x, 2) + f32::powi(self.y - point.y, 2))
+    }
+
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        for a in [self.x, self.y] {
+            bytes.extend(a.to_le_bytes());
+        }
+        bytes
     }
 }
