@@ -2,12 +2,12 @@ use super::punk_algebra::vector2::PunkVector2;
 
 #[derive(Clone)]
 pub struct SoldierInfo {
-    name: String,
-    variety: i32,
-    attack: f32,
-    defense: f32,
-    health: f32,
-    mass: f32,
+    pub name: String,
+    pub variety: i32,
+    pub attack: f32,
+    pub defense: f32,
+    pub health: f32,
+    pub mass: f32,
 }
 
 #[derive(Clone)]

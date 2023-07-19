@@ -11,7 +11,10 @@ use crate::{link::{
     linkable::Linkable,
     message::Message,
     satellite::Satellite
-}, utilities::as_u32};
+}, 
+utilities::as_u32,
+battle_engine::{battle_engine::BattleEngine, self}
+};
 
 pub struct Entity {
     position: Vec<u32>,
@@ -91,6 +94,7 @@ pub struct Game {
 
     game_state: GameState,
     entities: HashMap<String, Vec<Entity>>,
+    battle_engine: Option<BattleEngine>,
 
     username_ids: BiMap<u32, UserInfo>,
 
@@ -230,12 +234,13 @@ impl Game {
             number_of_players: 0
         };
 
+        let battle_engine = None;
         let entities = HashMap::new();
         let username_ids = BiMap::new();
         
         let update_interval = time::interval(time::Duration::from_secs(1));
 
-        (Game {user, message_history, connected, connected_link_senders, game_handler_info: None, player_states, game_state, entities, username_ids, update_interval}, link_sender)
+        (Game {user, message_history, connected, connected_link_senders, game_handler_info: None, player_states, game_state, battle_engine, entities, username_ids, update_interval}, link_sender)
     }
 
     fn add_player(&mut self, user: UserInfo) {
@@ -334,6 +339,12 @@ impl Game {
                 let _ = tx.send(Message { info: self.info(), bytes: vec![115] }).await;
             }
         }
+
+        self.setup_battle_engine();
+    }
+
+    fn setup_battle_engine(&mut self) {
+        
     }
 
 }

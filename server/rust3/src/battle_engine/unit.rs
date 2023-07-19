@@ -9,12 +9,12 @@ use crate::battle_engine::{order::{Order, OrderType}, soldier::{Soldier, Soldier
 
 #[derive(Clone)]
 pub struct UnitInfo {
-    name: String,
-    stance: i32,
-    speed: f32,
-    spacing: f32,
-    width: i32,
-    soldiers: Vec<i32>
+    pub name: String,
+    pub stance: i32,
+    pub speed: f32,
+    pub spacing: f32,
+    pub width: i32,
+    pub soldiers: Vec<i32>
 }
 
 #[derive(Clone)]
