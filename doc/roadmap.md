@@ -1,6 +1,6 @@
 # Roadmap
 
-**v0.1.0: Devlog Tiny** 
+**v0.1.0: Tiny** 
 - UI
     - Login ✅
     - Game Browser 
@@ -60,3 +60,7 @@
     - Simple melee combat ✅
     - Duel closest ✅
     - Physics ✅
+
+**v0.2.1: Archeon**
+- Move combat engine to Rust
+- Stream combat engine data to clients from server

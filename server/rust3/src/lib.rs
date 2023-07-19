@@ -5,3 +5,4 @@ pub mod game;
 pub mod gamehandler;
 pub mod peer;
 pub mod utilities;
+pub mod battle_engine;

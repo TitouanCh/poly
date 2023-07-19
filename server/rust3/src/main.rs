@@ -14,6 +14,8 @@ use rust::link::{
     link::Link
 };
 
+use rust::battle_engine;
+
 #[tokio::main]
 async fn main() {
     // Logging setup
