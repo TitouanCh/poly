@@ -96,7 +96,13 @@ impl Linkable for Peer {
         bytes.append(&mut end);
         let bytes: &[u8] = &bytes;
         self.connexion.socket.write_all(bytes).await.unwrap();
-        info!("{}: We sent back: {:?} or {}", self.info().to_string(), bytes, String::from_utf8(bytes.to_vec()).unwrap());
+        // Console output:
+        let message_as_str: String;
+        match String::from_utf8(bytes.to_vec()) {
+            Ok(a) => {message_as_str = a;}
+            Err(_) => {message_as_str = "Undecipherable".to_string();}
+        }
+        info!("{}: We sent back: {:?} or {}", self.info().to_string(), bytes, message_as_str);
     }
 }
 

@@ -47,11 +47,11 @@ impl BattleEngine {
         self.units.insert(idx, unit);
     }
 
-    pub fn units_as_bytes(&self, _player: u8) -> Vec<u8> {
+    // Gives a list of packets to send, each unit is it's own packet because the packets are big af
+    pub fn units_as_bytes(&self, _player: u8) -> Vec<Vec<u8>> {
         let mut bytes = Vec::new();
         for (_, unit) in &self.units {
-            bytes.extend(unit.to_bytes());
-            bytes.push(255)
+            bytes.push(unit.to_bytes());
         }
         bytes
     }

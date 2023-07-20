@@ -333,7 +333,11 @@ impl Game {
     async fn send_battle_state(&self, tx: mpsc::Sender<Message>) {
         match &self.battle_engine {
             Some(battle_engine) => {
-                let _ = tx.send(Message { info: self.info(), bytes: battle_engine.units_as_bytes(0)}); 
+                let mut list_of_bytes = battle_engine.units_as_bytes(0);
+                for bytes in &mut list_of_bytes {
+                    bytes.insert(0, 49);
+                    let _ = tx.send(Message { info: self.info(), bytes: bytes.to_vec()}).await; 
+                }
             }
             None => {info!("{}: Could not send game state because there is no battle engine", self.info().to_string());}
         }
@@ -376,10 +380,8 @@ impl Game {
         if self.turn_time_current > self.turn_time {
             self.turn_time_current = Duration::ZERO;
             self.battle_engine.as_mut().unwrap().process_by_intervall(60.0, 0.1);
-
+            self.send_battle_state_to_all().await;
         }
-
-        self.send_battle_state_to_all().await;
     }
 
 }
