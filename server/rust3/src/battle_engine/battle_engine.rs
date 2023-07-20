@@ -1,5 +1,7 @@
 use::std::collections::HashMap;
-use crate::battle_engine::{soldier::SoldierInfo, unit::{Unit, UnitInfo}, punk_algebra::vector2::PunkVector2};
+use log::info;
+
+use crate::{battle_engine::{soldier::SoldierInfo, unit::{Unit, UnitInfo}, punk_algebra::vector2::PunkVector2}, link::userinfo::UserInfo};
 
 pub struct BattleEngine {
     soldier_compendium: HashMap<u8, SoldierInfo>,
@@ -20,6 +22,7 @@ impl BattleEngine {
     pub fn ready(&mut self) {
         self.add_unit(0, 0, PunkVector2::new(0.0, 0.0), 45.0);
         self.add_unit(0, 0, PunkVector2::new(2000.0, 2000.0), 0.0);
+        info!("{}: Ready", "Battle Engine".to_string());
     }
 
     pub fn process(&mut self, delta: f32) {
@@ -28,10 +31,28 @@ impl BattleEngine {
         }
     }
 
+    pub fn process_by_intervall(&mut self, delta: f32, intervall: f32) {
+        let mut sum = 0.0;
+        while sum < delta {
+            self.process(intervall);
+            sum += intervall;
+        }
+        info!("{}: Processed {}s ({}s)", "Battle Engine".to_string(), delta, intervall);
+    }
+
     pub fn add_unit(&mut self, variety: u8, team: u8, position: PunkVector2, angle: f32) {
         let idx: u32 = self.units.len().try_into().unwrap();
         let mut unit = Unit::new(idx, self.unit_compendium.get(&variety).unwrap().clone(), position, angle, team, &self.soldier_compendium);
         unit.setup();
         self.units.insert(idx, unit);
+    }
+
+    pub fn units_as_bytes(&self, _player: u8) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        for (_, unit) in &self.units {
+            bytes.extend(unit.to_bytes());
+            bytes.push(255)
+        }
+        bytes
     }
 }

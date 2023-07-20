@@ -219,10 +219,7 @@ impl Unit {
         for a in [self.soldiers_alive, self.soldiers_incombat] {
             bytes.extend(a.to_le_bytes());
         }
-
-        // Next bytes are unit info
-        bytes.extend(self.info.to_bytes());
-
+        
         // Add a seperator for good measure
         bytes.push(255);
 

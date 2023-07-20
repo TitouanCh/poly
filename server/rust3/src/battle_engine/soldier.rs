@@ -1,3 +1,5 @@
+use std::vec;
+
 use super::punk_algebra::vector2::PunkVector2;
 use crate::utilities::string_as_24_bytes;
 
@@ -41,6 +43,14 @@ impl Soldier {
 
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
-
+        for vector in [self.position, self.target_position, self.combat_position] {
+            bytes.extend(vector.to_bytes());
+        }
+        for bool in [self.incombat, self.alive] {
+            bytes.push(bool as u8);
+        }
+        bytes.extend(self.opponent[0].to_le_bytes());
+        bytes.extend(self.opponent[1].to_le_bytes());
+        bytes
     }
 }

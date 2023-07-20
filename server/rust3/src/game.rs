@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use tokio::{sync::mpsc, time};
-use std::{collections::HashMap};
+use std::{collections::HashMap, time::Duration};
 use bimap::BiMap;
 use log::info;
 
@@ -98,7 +98,9 @@ pub struct Game {
 
     username_ids: BiMap<u32, UserInfo>,
 
-    update_interval: time::Interval
+    update_interval: time::Interval,
+    turn_time: time::Duration,
+    turn_time_current: time::Duration
 }
 
 #[async_trait]
@@ -154,6 +156,8 @@ impl Linkable for Game {
             _ = self.update_interval.tick() => {
                 self.send_player_states_to_all().await;
                 self.send_info_to_gh().await;
+                // If game has started, tick game
+                if self.battle_engine.is_some() {self.battle_tick(self.update_interval.period()).await}
                 true
             }
         }
@@ -239,8 +243,10 @@ impl Game {
         let username_ids = BiMap::new();
         
         let update_interval = time::interval(time::Duration::from_secs(1));
+        let turn_time = time::Duration::from_secs(10);
+        let turn_time_current = time::Duration::from_secs(0);
 
-        (Game {user, message_history, connected, connected_link_senders, game_handler_info: None, player_states, game_state, battle_engine, entities, username_ids, update_interval}, link_sender)
+        (Game {user, message_history, connected, connected_link_senders, game_handler_info: None, player_states, game_state, battle_engine, entities, username_ids, update_interval, turn_time, turn_time_current}, link_sender)
     }
 
     fn add_player(&mut self, user: UserInfo) {
@@ -309,12 +315,27 @@ impl Game {
         }
     }
 
-    // Send back state of the players
     async fn send_player_state(&self, tx: mpsc::Sender<Message>) { 
         for (from_user, player_state) in &self.player_states {
             let mut bytes = vec![108];
             bytes.extend(player_state.to_bytes());
             let _ = tx.send(Message { info: from_user.clone(), bytes }).await;
+        }
+    }
+
+    async fn send_battle_state_to_all(&self) {
+        info!("{}: sending back battle state", self.info().to_string());
+        for (_user, sender) in &self.connected {
+            self.send_battle_state(sender.clone()).await;
+        }
+    }
+
+    async fn send_battle_state(&self, tx: mpsc::Sender<Message>) {
+        match &self.battle_engine {
+            Some(battle_engine) => {
+                let _ = tx.send(Message { info: self.info(), bytes: battle_engine.units_as_bytes(0)}); 
+            }
+            None => {info!("{}: Could not send game state because there is no battle engine", self.info().to_string());}
         }
     }
 
@@ -347,6 +368,18 @@ impl Game {
         info!("{}: Starting battle engine", self.info().to_string());
         self.battle_engine = Some(BattleEngine::new());
         self.battle_engine.as_mut().unwrap().ready();
+    }
+
+    async fn battle_tick(&mut self, time: time::Duration) {
+        self.turn_time_current += time;
+
+        if self.turn_time_current > self.turn_time {
+            self.turn_time_current = Duration::ZERO;
+            self.battle_engine.as_mut().unwrap().process_by_intervall(60.0, 0.1);
+
+        }
+
+        self.send_battle_state_to_all().await;
     }
 
 }
