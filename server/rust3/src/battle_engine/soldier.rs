@@ -42,6 +42,8 @@ impl Soldier {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
+        // Total: 8 + 8 + 8 + 1 + 1 + 8 = 34 bytes
+        // position: PunkVector2 + target_position: PunkVector2 + combat_position: PunkVector2 + incombat: bool + alive: bool + opponent: [u32; 2]
         let mut bytes = Vec::new();
         for vector in [self.position, self.target_position, self.combat_position] {
             bytes.extend(vector.to_bytes());

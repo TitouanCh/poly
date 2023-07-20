@@ -89,6 +89,8 @@ impl PunkVector2 {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
+        // 4 + 4 = 8 bytes
+        // x: f32, y: f32
         let mut bytes = Vec::new();
         for a in [self.x, self.y] {
             bytes.extend(a.to_le_bytes());

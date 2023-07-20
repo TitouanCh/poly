@@ -16,6 +16,7 @@ signal received_city(city_data: Array)
 signal received_joined_game
 signal received_lobby_state(lobby_state: Array)
 signal received_browser_state(browser_state: Array)
+signal received_frame_data(frame_data: Array)
 
 func _ready() -> void:
 	_client.connected.connect(_handle_client_connected)
@@ -64,6 +65,11 @@ func _handle_client_data(data) -> void:
 			print("Starting!!!")
 			#received_start_game.emit(message["content"][1])
 			received_start_game.emit()
+		
+		# Frame data
+		if message["content"][0] == "1":
+			print("Received frame data")
+			received_frame_data.emit(message["content"][1])
 		
 #	var data_str = data.get_string_from_utf8()
 #	print("Received data: ", data_str, " or ", data)
@@ -138,6 +144,68 @@ func decode_bytes(bytes : Array) -> Array:
 		messages_decoded.append(message)
 		
 	return messages_decoded
+
+func decode_unit(unit_as_bytes: Array) -> Array:
+	# ------------- Built unit format -------------- :
+	# idx: float | Array: [ n: int, team: int, current_position: Vector2, center_of_mass: Vector2,
+	#                       current_angle: float, incombat: bool, soldier_alive: int, soldiers_combat, [Orders], [Soldiers] ]
+
+	# Here return [idx, [Built unit]]
+	
+	var bytes = PackedByteArray(unit_as_bytes)
+	var idx = bytes.decode_u32(0)
+	var n = bytes.decode_u16(4)
+	var team = bytes.decode_u8(6)
+	var current_position = decode_vector2(bytes, 7)
+	var center_of_mass = decode_vector2(bytes, 15)
+	var current_angle = bytes.decode_float(23)
+	var incombat = bool(bytes[27])
+	var soldiers_alive = bytes.decode_u16(28)
+	var soldiers_incombat = bytes.decode_u16(30)
+	var built_unit = [
+		n, team, current_position, center_of_mass, current_angle, incombat, soldiers_alive, soldiers_incombat
+	]
+	print("Initial build_unit: ", built_unit)
+	
+	var soldiers = []
+	for i in range(n):
+		soldiers.append(decode_soldier(bytes, 32 + i * 34))
+	
+	var orders = []
+	var i = 32 + 34 * n
+	while i < len(bytes):
+		orders.append(decode_order(bytes, i))
+		i += 13
+	
+	built_unit.append(soldiers)
+	built_unit.append(orders)
+	print("Final unit: ", built_unit)
+	return [idx, built_unit]
+
+func decode_soldier(byte_array: PackedByteArray, at: int) -> Array:
+	# Built soldier format:
+	# Array: [position: Vector2, target_position: Vector2, combat_position: Vector2, incombat: bool, alive: bool, opponent: Array]
+	var position = decode_vector2(byte_array, at)
+	var target_position = decode_vector2(byte_array, at + 8)
+	var combat_position = decode_vector2(byte_array, at + 16)
+	var incombat = bool(byte_array[at + 24])
+	var alive = bool(byte_array[at + 25])
+	var opponent = [byte_array.decode_u32(at + 26), byte_array.decode_u32(at + 30)]
+	return [position, target_position, combat_position, incombat, alive, opponent]
+
+func decode_order(byte_array: PackedByteArray, at: int) -> Array:
+	# Built order format:
+	# Array: [what: string, position: Vector2, angle: float]
+	var position = decode_vector2(byte_array, at + 1)
+	var angle = byte_array.decode_float(at + 9)
+	var array = byte_array.slice(0, 1)
+	var what = array.get_string_from_utf8()
+	return [what, position, angle]
+
+func decode_vector2(byte_array: PackedByteArray, at: int) -> Vector2:
+	var x = byte_array.decode_float(at)
+	var y = byte_array.decode_float(at + 4)
+	return Vector2(x, y)
 
 # Seperates a bytes array by an array of bytes
 func _seperate_byte_array(array : Array, separator : Array) -> Array:

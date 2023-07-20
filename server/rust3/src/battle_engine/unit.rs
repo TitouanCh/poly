@@ -203,13 +203,23 @@ impl Unit {
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
 
-        // First 32 bytes are the unit idx
-        bytes.extend(self.idx.to_le_bytes());
+        // -------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // 1                             + 4                             + 2                             + 1                             + 8                              
+        // second hand identifier: u8    + unit idx: u32                 + n: u16                        + team: u8                      + current_position: PunkVector2
+        // -------------------------------------------------------------------------------------------------------------------------------------------------------------
+       //+ 8                             + 4                             + 1                             + 2                             + 2                              _________________                            
+        // center_of_mass: PunkVector2   + current_angle: f32            + incombat: bool                + soldiers_alive: u16           + soldiers_incombat: u16        | HERE = 33 bytes |
+        // -------------------------------------------------------------------------------------------------------------------------------------------------------------  
+       //+ n x 34                        + ? x 13
+        // soldiers: Soldier             + order: Order
+        // -------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // TOTAL = 33 + n x 34 + ? x 13 bytes
 
-        // Next 16 bytes are the number of soldiers in the unit
+        bytes.push(117); // u: for unit
+        bytes.extend(self.idx.to_le_bytes());
         bytes.extend(self.n.to_le_bytes());
 
-        // Next is in order: team, position, center of mass, angle, incombat, soldiers alive, soldiers in combat
+        // team, position, center of mass, angle, incombat, soldiers alive, soldiers in combat
         bytes.extend(self.team.to_le_bytes());
         for vector in [self.current_position, self.center_of_mass] {
             bytes.extend(vector.to_bytes());
@@ -219,20 +229,12 @@ impl Unit {
         for a in [self.soldiers_alive, self.soldiers_incombat] {
             bytes.extend(a.to_le_bytes());
         }
-        
-        // Add a seperator for good measure
-        bytes.push(255);
-
-        // Next is orders
-        for order in &self.orders {
-            bytes.extend(order.to_bytes());
-        }
-
-        // And finally per soldier data
         for soldier in &self.soldiers {
             bytes.extend(soldier.to_bytes());
         }
-        
+        for order in &self.orders {
+            bytes.extend(order.to_bytes());
+        }
         bytes
     }
 }

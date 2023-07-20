@@ -5,6 +5,10 @@ class_name Operator
 enum phase {STANDBY, PLACEMENT, INGAME}
 
 var current_phase = phase.STANDBY
+var built_frame0 = {
+	"units": {}
+}
+var built_frame1 = {}
 
 # For now, only one selection at the time
 var selected_node : Prop = null
@@ -14,6 +18,7 @@ var selected_node : Prop = null
 func _ready():
 	if Multiplayer:
 		Multiplayer.connect("received_start_game", received_start_game)
+		Multiplayer.connect("received_frame_data", received_frame_data)
 
 func _process(delta):
 	if current_phase == phase.STANDBY:
@@ -49,6 +54,14 @@ func received_start_game():
 	if current_phase == phase.STANDBY:
 		print("Received start game")
 		current_phase = phase.PLACEMENT
+
+func received_frame_data(frame_data):
+	var identifier = frame_data.slice(0, 1).get_string_from_utf8()
+	# Unit
+	if identifier == "u":
+		frame_data = frame_data.slice(1, len(frame_data))
+		print(frame_data)
+		var built_unit = Multiplayer.decode_unit(frame_data)
 
 func vec3_to_vec2i(vector3 : Vector3) -> Vector2i:
 	return Vector2i(int(vector3.x), int(vector3.z))

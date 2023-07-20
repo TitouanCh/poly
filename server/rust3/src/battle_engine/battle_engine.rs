@@ -20,7 +20,7 @@ impl BattleEngine {
     }
 
     pub fn ready(&mut self) {
-        self.add_unit(0, 0, PunkVector2::new(0.0, 0.0), 45.0);
+        self.add_unit(0, 9, PunkVector2::new(0.0, 0.0), 45.0);
         self.add_unit(0, 0, PunkVector2::new(2000.0, 2000.0), 0.0);
         info!("{}: Ready", "Battle Engine".to_string());
     }
