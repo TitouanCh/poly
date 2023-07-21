@@ -7,6 +7,6 @@ extends Control
 
 func _process(delta):
 	if unit:
-		attack_label.text = str(unit.attack)
-		defense_label.text = str(unit.defense)
-		health_label.text = str(unit.health)
+		attack_label.text = str(1)
+		defense_label.text = str(1)
+		health_label.text = str(1)

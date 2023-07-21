@@ -13,7 +13,9 @@ var built_frame1 = {}
 # For now, only one selection at the time
 var selected_node : Prop = null
 
-@onready var renderer : Renderer = $flask/ether1/renderer 
+@onready var renderer : Renderer = $flask/ether1/renderer
+
+signal set_unit(idx_built_unit: Array)
 
 func _ready():
 	if Multiplayer:
@@ -60,8 +62,8 @@ func received_frame_data(frame_data):
 	# Unit
 	if identifier == "u":
 		frame_data = frame_data.slice(1, len(frame_data))
-		print(frame_data)
-		var built_unit = Multiplayer.decode_unit(frame_data)
+		var idx_built_unit = Multiplayer.decode_unit(frame_data)
+		set_unit.emit(idx_built_unit)
 
 func vec3_to_vec2i(vector3 : Vector3) -> Vector2i:
 	return Vector2i(int(vector3.x), int(vector3.z))

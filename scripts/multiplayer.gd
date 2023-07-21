@@ -40,7 +40,7 @@ func _handle_client_connected() -> void:
 
 func _handle_client_data(data) -> void:
 	var messages = decode_bytes(data)
-	print(messages)
+	print("Received: ", messages)
 	
 	for message in messages:
 		# Global chat message
@@ -148,7 +148,7 @@ func decode_bytes(bytes : Array) -> Array:
 func decode_unit(unit_as_bytes: Array) -> Array:
 	# ------------- Built unit format -------------- :
 	# idx: float | Array: [ n: int, team: int, current_position: Vector2, center_of_mass: Vector2,
-	#                       current_angle: float, incombat: bool, soldier_alive: int, soldiers_combat, [Orders], [Soldiers] ]
+	#                       current_angle: float, incombat: bool, soldier_alive: int, soldiers_combat, [Soldiers], [Orders] ]
 
 	# Here return [idx, [Built unit]]
 	
@@ -165,7 +165,7 @@ func decode_unit(unit_as_bytes: Array) -> Array:
 	var built_unit = [
 		n, team, current_position, center_of_mass, current_angle, incombat, soldiers_alive, soldiers_incombat
 	]
-	print("Initial build_unit: ", built_unit)
+#	print("Initial build_unit: ", built_unit)
 	
 	var soldiers = []
 	for i in range(n):
@@ -179,7 +179,7 @@ func decode_unit(unit_as_bytes: Array) -> Array:
 	
 	built_unit.append(soldiers)
 	built_unit.append(orders)
-	print("Final unit: ", built_unit)
+#	print("Final unit: ", built_unit)
 	return [idx, built_unit]
 
 func decode_soldier(byte_array: PackedByteArray, at: int) -> Array:
